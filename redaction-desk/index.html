@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Censor's Redaction Desk — 1919</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="../index.html" style="position:fixed;top:0.75rem;left:1rem;z-index:9999;font-family:'Playfair Display',serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#d4c4a8;opacity:0.5;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">&larr; Crossroads</a>
+    <!-- ═══════ INTRO SCREEN ═══════ -->
+    <div id="screen-intro" class="screen active">
+        <div class="desk-surface">
+            <div class="paper intro-paper">
+                <div class="masthead">
+                    <div class="masthead-rule"></div>
+                    <h1 class="masthead-title">The Lahore Tribune</h1>
+                    <div class="masthead-subtitle">Est. 1907 — "Truth Is Our Ink"</div>
+                    <div class="masthead-rule"></div>
+                </div>
+                <div id="intro-content">
+                    <h2 id="intro-heading"></h2>
+                    <p id="intro-body"></p>
+                    <p id="intro-flavor" class="flavor-text"></p>
+                </div>
+                <div class="intro-nav">
+                    <button id="btn-intro-back" class="btn-nav" disabled>Back</button>
+                    <span id="intro-dots" class="page-dots"></span>
+                    <button id="btn-intro-next" class="btn-nav">Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ GAME SCREEN ═══════ -->
+    <div id="screen-game" class="screen">
+        <div class="desk-surface">
+            <!-- Meters Panel -->
+            <div class="meters-panel">
+                <div class="meter" id="meter-truth">
+                    <div class="meter-label">Truth</div>
+                    <div class="meter-bar">
+                        <div class="meter-fill meter-fill-truth" id="fill-truth"></div>
+                    </div>
+                    <div class="meter-value" id="val-truth">100</div>
+                </div>
+                <div class="dispatch-counter" id="dispatch-counter">Dispatch 1 of 9</div>
+                <div class="meter" id="meter-risk">
+                    <div class="meter-label">Risk</div>
+                    <div class="meter-bar">
+                        <div class="meter-fill meter-fill-risk" id="fill-risk"></div>
+                    </div>
+                    <div class="meter-value" id="val-risk">0</div>
+                </div>
+            </div>
+
+            <!-- Newspaper -->
+            <div class="paper dispatch-paper" id="dispatch-paper">
+                <div class="dispatch-header">
+                    <div class="dispatch-masthead">The Lahore Tribune</div>
+                    <div class="dispatch-date" id="dispatch-date"></div>
+                </div>
+                <h2 class="dispatch-headline" id="dispatch-headline"></h2>
+                <div class="dispatch-source" id="dispatch-source"></div>
+                <div class="dispatch-body" id="dispatch-body"></div>
+                <div class="censor-warning" id="censor-warning"></div>
+            </div>
+
+            <!-- Print Button -->
+            <div class="print-area">
+                <button id="btn-print" class="btn-print">PRINT EDITION</button>
+                <div class="redaction-hint" id="redaction-hint">Click highlighted phrases to redact them</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ OUTCOME SCREEN ═══════ -->
+    <div id="screen-outcome" class="screen">
+        <div class="desk-surface">
+            <div class="paper outcome-paper">
+                <div class="stamp" id="outcome-stamp"></div>
+                <h2 class="outcome-headline" id="outcome-headline"></h2>
+                <div class="outcome-reactions">
+                    <div class="reaction" id="reaction-censor">
+                        <div class="reaction-label">The Censor</div>
+                        <p id="reaction-censor-text"></p>
+                    </div>
+                    <div class="reaction" id="reaction-public">
+                        <div class="reaction-label">The Public</div>
+                        <p id="reaction-public-text"></p>
+                    </div>
+                </div>
+                <div class="outcome-meters">
+                    <div class="outcome-meter">
+                        <span class="outcome-meter-label">Truth:</span>
+                        <span class="outcome-meter-value" id="outcome-truth"></span>
+                    </div>
+                    <div class="outcome-meter">
+                        <span class="outcome-meter-label">Risk:</span>
+                        <span class="outcome-meter-value" id="outcome-risk"></span>
+                    </div>
+                </div>
+                <div class="historical-note" id="outcome-history">
+                    <div class="note-label">Historical Note</div>
+                    <p id="outcome-history-text"></p>
+                </div>
+                <button id="btn-next" class="btn-next">NEXT DISPATCH</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════ END SCREEN ═══════ -->
+    <div id="screen-end" class="screen">
+        <div class="desk-surface">
+            <div class="paper end-paper">
+                <div class="end-stamp" id="end-stamp"></div>
+                <h2 class="end-title" id="end-title"></h2>
+                <p class="end-description" id="end-description"></p>
+                <div class="end-stats">
+                    <div class="end-stat">
+                        <div class="end-stat-label">Final Truth</div>
+                        <div class="end-stat-value" id="end-truth"></div>
+                    </div>
+                    <div class="end-stat">
+                        <div class="end-stat-label">Final Risk</div>
+                        <div class="end-stat-value" id="end-risk"></div>
+                    </div>
+                    <div class="end-stat">
+                        <div class="end-stat-label">Dispatches</div>
+                        <div class="end-stat-value" id="end-dispatches"></div>
+                    </div>
+                </div>
+                <div class="end-summary" id="end-summary"></div>
+                <p class="end-epilogue" id="end-epilogue"></p>
+                <div class="historical-note" id="end-reflection">
+                    <div class="note-label">Historical Reflection</div>
+                    <p id="end-reflection-text"></p>
+                </div>
+                <button id="btn-restart" class="btn-restart">START AGAIN</button>
+                <div class="credit">A companion game for SOCI 274</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glossary Tooltip -->
+    <div id="glossary-tooltip" class="glossary-tooltip" role="tooltip" aria-hidden="true"></div>
+
+    <script src="content.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crossroads: India 1790–1947</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-deep: #0c0b14;
+      --bg-surface: #141320;
+      --text-primary: #e8e2d4;
+      --text-muted: #a09882;
+      --accent-gold: #c9a84c;
+      --accent-gold-dim: #8a7233;
+      --border-subtle: rgba(201, 168, 76, 0.15);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- Header --- */
+    .site-header {
+      text-align: center;
+      padding: 4rem 2rem 2.5rem;
+      position: relative;
+    }
+
+    .site-header::after {
+      content: '';
+      display: block;
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+      margin: 2rem auto 0;
+    }
+
+    .site-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .site-subtitle {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.75rem, 2vw, 1rem);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent-gold);
+      margin-top: 0.5rem;
+    }
+
+    .site-desc {
+      max-width: 600px;
+      margin: 1.5rem auto 0;
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* --- Timeline spine --- */
+    .timeline {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 2rem 4rem;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg, transparent 0%, var(--accent-gold-dim) 10%, var(--accent-gold-dim) 90%, transparent 100%);
+      transform: translateX(-50%);
+    }
+
+    /* --- Game cards --- */
+    .game-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-bottom: 3rem;
+    }
+
+    .game-card .year-marker {
+      position: absolute;
+      left: 50%;
+      top: 2rem;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      padding: 0.3rem 0.9rem;
+      border-radius: 2px;
+      border: 1px solid;
+    }
+
+    .game-card .card-body {
+      padding: 2rem 2.5rem;
+      border-radius: 4px;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .game-card .card-body:hover {
+      transform: translateY(-3px);
+    }
+
+    /* Alternating layout */
+    .game-card:nth-child(odd) .card-body { grid-column: 1; margin-right: 3rem; }
+    .game-card:nth-child(odd) .card-spacer { grid-column: 2; }
+    .game-card:nth-child(even) .card-body { grid-column: 2; margin-left: 3rem; }
+    .game-card:nth-child(even) .card-spacer { grid-column: 1; }
+
+    .card-role {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    .card-cta {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-cta .arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .card-body:hover .card-cta .arrow {
+      transform: translateX(4px);
+    }
+
+    /* --- Per-game color themes --- */
+
+    /* Last Maharaja — Mughal jewel tones */
+    .theme-maharaja .year-marker {
+      background: #1a1932;
+      color: #d4a843;
+      border-color: #d4a843;
+    }
+    .theme-maharaja .card-body {
+      background: linear-gradient(135deg, #1a1932 0%, #12112a 100%);
+      border: 1px solid rgba(212, 168, 67, 0.2);
+    }
+    .theme-maharaja .card-body:hover {
+      box-shadow: 0 8px 32px rgba(212, 168, 67, 0.1);
+    }
+    .theme-maharaja .card-role { color: #d4a843; }
+    .theme-maharaja .card-title { color: #f0e9d6; }
+    .theme-maharaja .card-desc { color: #b0a890; }
+    .theme-maharaja .card-cta { color: #d4a843; }
+
+    /* Bengal 1905 — Colonial archive */
+    .theme-bengal .year-marker {
+      background: #1a2744;
+      color: #d4b76a;
+      border-color: #8b5e3c;
+    }
+    .theme-bengal .card-body {
+      background: linear-gradient(135deg, #1e2a3e 0%, #172035 100%);
+      border: 1px solid rgba(139, 94, 60, 0.25);
+    }
+    .theme-bengal .card-body:hover {
+      box-shadow: 0 8px 32px rgba(139, 94, 60, 0.1);
+    }
+    .theme-bengal .card-role { color: #8b5e3c; }
+    .theme-bengal .card-title { color: #e8e0cc; }
+    .theme-bengal .card-desc { color: #a09680; }
+    .theme-bengal .card-cta { color: #d4b76a; }
+
+    /* Redaction Desk — Walnut & newsprint */
+    .theme-redaction .year-marker {
+      background: #2c1e12;
+      color: #d4c4a8;
+      border-color: #6b5238;
+    }
+    .theme-redaction .card-body {
+      background: linear-gradient(135deg, #2a1e14 0%, #221810 100%);
+      border: 1px solid rgba(107, 82, 56, 0.3);
+    }
+    .theme-redaction .card-body:hover {
+      box-shadow: 0 8px 32px rgba(107, 82, 56, 0.12);
+    }
+    .theme-redaction .card-role { color: #9b7d5a; }
+    .theme-redaction .card-title { color: #e8dcc8; }
+    .theme-redaction .card-desc { color: #a09580; }
+    .theme-redaction .card-cta { color: #d4c4a8; }
+
+    /* Salt March — Earthy saffron & khadi */
+    .theme-salt .year-marker {
+      background: #1a1810;
+      color: #d4924a;
+      border-color: #d4924a;
+    }
+    .theme-salt .card-body {
+      background: linear-gradient(135deg, #1c1a12 0%, #15130c 100%);
+      border: 1px solid rgba(212, 146, 74, 0.2);
+    }
+    .theme-salt .card-body:hover {
+      box-shadow: 0 8px 32px rgba(212, 146, 74, 0.08);
+    }
+    .theme-salt .card-role { color: #d4924a; }
+    .theme-salt .card-title { color: #e8dcc8; }
+    .theme-salt .card-desc { color: #a09580; }
+    .theme-salt .card-cta { color: #d4924a; }
+
+    /* The Pact — Stark charcoal & deep red */
+    .theme-pact .year-marker {
+      background: #1a1118;
+      color: #c44040;
+      border-color: #c44040;
+    }
+    .theme-pact .card-body {
+      background: linear-gradient(135deg, #1c1820 0%, #141018 100%);
+      border: 1px solid rgba(196, 64, 64, 0.2);
+    }
+    .theme-pact .card-body:hover {
+      box-shadow: 0 8px 32px rgba(196, 64, 64, 0.1);
+    }
+    .theme-pact .card-role { color: #c44040; }
+    .theme-pact .card-title { color: #e8e0e0; }
+    .theme-pact .card-desc { color: #a09098; }
+    .theme-pact .card-cta { color: #c44040; }
+
+    /* Muslim perspective — Teal & marble */
+    .theme-muslim .year-marker {
+      background: #0f1a1e;
+      color: #5ab8a0;
+      border-color: #5ab8a0;
+    }
+    .theme-muslim .card-body {
+      background: linear-gradient(135deg, #121e22 0%, #0d181c 100%);
+      border: 1px solid rgba(90, 184, 160, 0.2);
+    }
+    .theme-muslim .card-body:hover {
+      box-shadow: 0 8px 32px rgba(90, 184, 160, 0.08);
+    }
+    .theme-muslim .card-role { color: #5ab8a0; }
+    .theme-muslim .card-title { color: #dce8e4; }
+    .theme-muslim .card-desc { color: #8aaa9e; }
+    .theme-muslim .card-cta { color: #5ab8a0; }
+
+    /* --- Coming soon badge --- */
+    .coming-soon .card-body {
+      opacity: 0.55;
+      cursor: default;
+    }
+    .coming-soon .card-body:hover {
+      transform: none;
+      box-shadow: none;
+    }
+    .badge-soon {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      border: 1px solid var(--text-muted);
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* --- Footer --- */
+    .site-footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .site-footer a {
+      color: var(--accent-gold-dim);
+      text-decoration: none;
+    }
+
+    /* --- Responsive --- */
+    @media (max-width: 700px) {
+      .timeline::before { left: 1.5rem; }
+
+      .game-card {
+        display: block;
+        padding-left: 3rem;
+      }
+
+      .game-card .year-marker {
+        left: 1.5rem;
+        top: 0;
+        transform: translateX(-50%);
+      }
+
+      .game-card .card-body {
+        margin: 0 !important;
+      }
+
+      .game-card .card-spacer { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card-body { transition: none; }
+      .card-cta .arrow { transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 class="site-title">Crossroads</h1>
+    <p class="site-subtitle">India, 1790–1947</p>
+    <p class="site-desc">
+      Six interactive scenarios. Six impossible choices.
+      Step into the decisions that shaped the end of British rule in India.
+    </p>
+  </header>
+
+  <main class="timeline" role="list">
+
+    <!-- 1. Last Maharaja (1790-1857) -->
+    <article class="game-card theme-maharaja" role="listitem">
+      <span class="year-marker">1790–1857</span>
+      <a class="card-body" href="last-maharaja/index.html">
+        <p class="card-role">You are a Maharaja</p>
+        <h2 class="card-title">The Last Maharaja</h2>
+        <p class="card-desc">
+          Rule a princely state as the East India Company tightens its grip.
+          Balance your treasury, your people's loyalty, and British demands
+          across seven decades — knowing that one wrong move means annexation.
+        </p>
+        <span class="card-cta">Enter the court <span class="arrow">&rarr;</span></span>
+      </a>
+      <div class="card-spacer"></div>
+    </article>
+
+    <!-- 2. Bengal 1905 -->
+    <article class="game-card theme-bengal" role="listitem">
+      <span class="year-marker">1905–1908</span>
+      <div class="card-spacer"></div>
+      <a class="card-body" href="bengal1905/static/index.html">
+        <p class="card-role">You are a Colonial Secretary</p>
+        <h2 class="card-title">Divide &amp; Rule</h2>
+        <p class="card-desc">
+          Serve as private secretary to the Viceroy during the Bengal Partition.
+          Manage the swadeshi boycott, rising nationalism, and London's expectations
+          while a subcontinent pushes back.
+        </p>
+        <span class="card-cta">Open the dispatch <span class="arrow">&rarr;</span></span>
+      </a>
+    </article>
+
+    <!-- 3. Redaction Desk (1919) -->
+    <article class="game-card theme-redaction" role="listitem">
+      <span class="year-marker">1919</span>
+      <a class="card-body" href="redaction-desk/index.html">
+        <p class="card-role">You are a Newspaper Editor</p>
+        <h2 class="card-title">The Censor's Redaction Desk</h2>
+        <p class="card-desc">
+          Edit a nationalist newspaper under the Rowlatt Acts.
+          Every headline is a gamble — publish too much truth and the press is seized,
+          redact too much and nobody reads you.
+        </p>
+        <span class="card-cta">Sit at the desk <span class="arrow">&rarr;</span></span>
+      </a>
+      <div class="card-spacer"></div>
+    </article>
+
+    <!-- 4. Salt March (1930) — Coming Soon -->
+    <article class="game-card theme-salt coming-soon" role="listitem">
+      <span class="year-marker">1930</span>
+      <div class="card-spacer"></div>
+      <div class="card-body">
+        <p class="card-role">You are a March Organizer</p>
+        <h2 class="card-title">The Salt March</h2>
+        <p class="card-desc">
+          Coordinate Gandhi's 240-mile march to Dandi. Manage water, volunteers,
+          and the international press — proving that nonviolence demands
+          as much strategy as any military campaign.
+        </p>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+    </article>
+
+    <!-- 5. The Pact (1932) — Coming Soon -->
+    <article class="game-card theme-pact coming-soon" role="listitem">
+      <span class="year-marker">1932</span>
+      <div class="card-body">
+        <p class="card-role">You are a Mediator</p>
+        <h2 class="card-title">The Pact</h2>
+        <p class="card-desc">
+          Gandhi is dying. Ambedkar won't yield. You have five days to forge a
+          compromise on Dalit political rights before the Mahatma's fast kills him —
+          or before the man fighting for liberation is forced to surrender.
+        </p>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+      <div class="card-spacer"></div>
+    </article>
+
+    <!-- 6. Two Flags (1937-1946) — Coming Soon -->
+    <article class="game-card theme-muslim coming-soon" role="listitem">
+      <span class="year-marker">1937–1946</span>
+      <div class="card-body">
+        <p class="card-role">You are a League Organizer</p>
+        <h2 class="card-title">Two Flags</h2>
+        <p class="card-desc">
+          Rebuild the Muslim League from electoral ruin into a mass movement.
+          Draft resolutions, court constituencies, and choose your rhetoric —
+          knowing that the coalition you build will determine what Pakistan means.
+        </p>
+        <span class="badge-soon">Coming soon</span>
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>SOCI 274 &middot; Interactive simulations for the study of Indian independence</p>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,721 @@
+/* ═══════════════════════════════════════════════════════
+   DIVIDE AND RULE — Colonial-Era Archival Design System
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Design Tokens ─── */
+:root {
+  /* Parchment palette */
+  --bg-body: #e8e0cc;
+  --bg-panel: #f5f1e6;
+  --bg-panel-alt: #ede8d8;
+
+  /* Header */
+  --bg-header: #1a2744;
+
+  /* Borders */
+  --border-soft: rgba(90, 68, 38, 0.12);
+  --border-medium: rgba(90, 68, 38, 0.22);
+  --border-rule: rgba(90, 68, 38, 0.35);
+
+  /* Accents */
+  --copper: #8b5e3c;
+  --copper-light: #a67c52;
+  --indigo: #1a2744;
+  --indigo-light: #2a3f66;
+  --gold: #b8963e;
+  --gold-light: #d4b15a;
+  --gold-text: #d4b76a;
+  --red-seal: #7a2e2e;
+  --sage: #4a6741;
+
+  /* Text */
+  --text-primary: #2c2416;
+  --text-secondary: #5c4a3a;
+  --text-muted: #8a7a6a;
+  --text-on-dark: #f0ead6;
+
+  /* Interactive */
+  --option-selected-bg: #f0e8c8;
+  --option-selected-border: var(--gold);
+  --status-text: var(--copper);
+
+  color-scheme: light;
+}
+
+/* ─── Reset ─── */
+* { box-sizing: border-box; }
+
+.hidden { display: none !important; }
+
+/* ─── Body & Paper Grain ─── */
+body {
+  margin: 0;
+  font-family: 'Crimson Pro', 'Georgia', 'Times New Roman', serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ─── Header ─── */
+header {
+  background: var(--bg-header);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(42, 63, 102, 0.5) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 50%, rgba(26, 39, 68, 0.8) 0%, transparent 70%);
+  color: var(--text-on-dark);
+  padding: clamp(22px, 5vw, 44px) clamp(24px, 6vw, 48px);
+  border-bottom: 3px solid var(--gold);
+  position: relative;
+}
+
+header::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, var(--gold-light) 30%, var(--gold-light) 70%, transparent 95%);
+  opacity: 0.35;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+header h1 {
+  margin: 0;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: clamp(1.35rem, 4vw, 2.35rem);
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1.15;
+  color: var(--gold-text);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+.version-badge {
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(212, 183, 106, 0.1);
+  padding: 4px 10px;
+  border: 1px solid rgba(212, 183, 106, 0.2);
+  color: rgba(212, 183, 106, 0.55);
+  white-space: nowrap;
+}
+
+/* ─── Main Layout ─── */
+main {
+  width: min(860px, 100%);
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 48px) clamp(18px, 5vw, 36px) 72px;
+  flex: 1;
+}
+
+/* ─── Panels ─── */
+.panel {
+  background: var(--bg-panel);
+  border-radius: 2px;
+  padding: clamp(24px, 4vw, 38px);
+  margin-bottom: 24px;
+  border: 1px solid var(--border-medium);
+  box-shadow:
+    0 1px 2px rgba(44, 36, 22, 0.06),
+    0 6px 20px rgba(44, 36, 22, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  position: relative;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-rule), transparent);
+}
+
+/* ─── Vignette (Opening Briefing) ─── */
+.vignette-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.vignette-header h2 {
+  margin: 0;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: clamp(1.25rem, 3vw, 1.85rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.vignette-header h2::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: var(--copper);
+  margin-top: 16px;
+  opacity: 0.6;
+}
+
+.vignette-text {
+  line-height: 1.8;
+  font-size: 1.06rem;
+  color: var(--text-secondary);
+}
+
+.vignette-text p {
+  margin: 0 0 16px;
+}
+
+.vignette-text p:last-child {
+  margin-bottom: 0;
+}
+
+.vignette-text strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.vignette-text blockquote {
+  margin: 16px 0;
+  padding: 14px 22px;
+  border-left: 3px solid var(--copper);
+  background: rgba(139, 94, 60, 0.04);
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.vignette-text code {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.92em;
+  background: rgba(90, 68, 38, 0.07);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ─── Glossary Tooltips ─── */
+.glossary-term {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--copper-light);
+  color: var(--copper);
+  transition: color 0.15s ease;
+}
+
+.glossary-term:hover {
+  color: var(--indigo);
+}
+
+.glossary-term::after {
+  content: attr(data-description);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  transform: translateX(-50%);
+  background: var(--indigo);
+  color: var(--text-on-dark);
+  padding: 12px 16px;
+  border-radius: 2px;
+  width: min(300px, 75vw);
+  font-family: 'Crimson Pro', serif;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  font-style: normal;
+  box-shadow: 0 8px 28px rgba(26, 39, 68, 0.35);
+  border: 1px solid rgba(212, 183, 106, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+  white-space: normal;
+}
+
+.glossary-term::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--indigo);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+
+.glossary-term:hover::after,
+.glossary-term:focus-visible::after,
+.glossary-term:hover::before,
+.glossary-term:focus-visible::before {
+  opacity: 1;
+}
+
+/* ─── Timeline Events (Intelligence Reports) ─── */
+.timeline-event {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 2px;
+  background: var(--bg-panel-alt);
+  border-left: 3px solid var(--indigo);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  border-right: 1px solid var(--border-soft);
+}
+
+.timeline-event__label {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 8px;
+}
+
+.timeline-event__body {
+  font-size: 0.96rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+}
+
+.timeline-event + .timeline-event {
+  margin-top: 12px;
+}
+
+/* ─── Stats Panel (Colonial Ledger) ─── */
+.stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  font-size: 0.9rem;
+}
+
+.stat {
+  background: rgba(90, 68, 38, 0.05);
+  border-radius: 2px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid transparent;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.stat-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.stat-value {
+  font-family: 'Crimson Pro', serif;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-numeric {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+/* Date card (ledger header) */
+.stat-date {
+  background: var(--indigo);
+  color: var(--text-on-dark);
+  grid-column: 1 / -1;
+  border: 1px solid rgba(212, 183, 106, 0.15);
+  border-left: 3px solid var(--gold);
+}
+
+.stat-date .stat-label {
+  color: rgba(240, 234, 214, 0.5);
+  font-family: 'Special Elite', monospace;
+  letter-spacing: 0.15em;
+}
+
+.stat-date .stat-value {
+  color: var(--gold-text);
+  font-family: 'Special Elite', monospace;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+}
+
+/* Stat severity */
+.stat-neutral {
+  background: rgba(90, 68, 38, 0.05);
+}
+
+.stat-good {
+  background: rgba(74, 103, 65, 0.09);
+  border-left-color: var(--sage);
+}
+
+.stat-warning {
+  background: rgba(184, 150, 62, 0.1);
+  border-left-color: var(--gold);
+}
+
+.stat-critical {
+  background: rgba(122, 46, 46, 0.09);
+  border-left-color: var(--red-seal);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Trend arrows */
+.trend-icon {
+  margin-left: 4px;
+  font-size: 0.8rem;
+}
+
+.trend-up-good  { color: var(--sage); }
+.trend-up-bad   { color: var(--red-seal); }
+.trend-down-good { color: var(--sage); }
+.trend-down-bad  { color: var(--red-seal); }
+
+/* ─── Narration ─── */
+.narration {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 1.06rem;
+}
+
+.narration p {
+  margin: 0 0 14px;
+}
+
+.narration strong {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.narration blockquote {
+  margin: 16px 0;
+  padding: 14px 22px;
+  border-left: 3px solid var(--copper);
+  background: rgba(139, 94, 60, 0.04);
+  font-style: italic;
+}
+
+.narration code {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.92em;
+  background: rgba(90, 68, 38, 0.07);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+/* ─── Options (Dispatch Directives) ─── */
+.options {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.options::before {
+  content: '\2014\2002\2726\2002\2014';
+  display: block;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  margin-bottom: 10px;
+  opacity: 0.45;
+}
+
+.options:empty::before {
+  display: none;
+}
+
+button.option {
+  text-align: left;
+  border-radius: 2px;
+  border: 1px solid var(--border-medium);
+  border-left: 3px solid var(--copper);
+  background: var(--bg-panel);
+  padding: 14px 18px 14px 20px;
+  cursor: pointer;
+  font-family: 'Crimson Pro', serif;
+  font-size: 1.04rem;
+  line-height: 1.65;
+  color: var(--text-primary);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+button.option:hover {
+  background: rgba(184, 150, 62, 0.06);
+  border-left-color: var(--gold);
+  box-shadow: 0 2px 10px rgba(44, 36, 22, 0.08);
+  transform: translateX(3px);
+}
+
+button.option:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 2px;
+}
+
+button.option.selected {
+  background: var(--option-selected-bg);
+  border-color: var(--option-selected-border);
+  border-left-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(184, 150, 62, 0.2);
+}
+
+button.option:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── CTA Button ─── */
+.cta-button {
+  align-self: flex-end;
+  padding: 12px 30px;
+  border-radius: 2px;
+  border: 1px solid var(--gold);
+  background: var(--indigo);
+  color: var(--gold-text);
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.cta-button:hover {
+  background: var(--indigo-light);
+  box-shadow: 0 4px 16px rgba(26, 39, 68, 0.3);
+}
+
+.cta-button:active {
+  transform: translateY(1px);
+}
+
+/* ─── Status Messages ─── */
+.status {
+  margin-top: 20px;
+  font-style: italic;
+  color: var(--status-text);
+  min-height: 1.2em;
+  font-size: 1rem;
+}
+
+.status-victory {
+  color: var(--sage) !important;
+  font-style: normal;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  padding: 18px 0 0;
+  border-top: 1px solid rgba(74, 103, 65, 0.25);
+}
+
+.status-defeat {
+  color: var(--red-seal) !important;
+  font-style: normal;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  padding: 18px 0 0;
+  border-top: 1px solid rgba(122, 46, 46, 0.25);
+}
+
+/* ─── Secondary Button (Restart) ─── */
+button.secondary {
+  margin-top: 20px;
+  padding: 11px 22px;
+  border-radius: 2px;
+  border: 1px solid var(--border-medium);
+  background: rgba(90, 68, 38, 0.04);
+  color: var(--text-primary);
+  font-family: 'Crimson Pro', serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+button.secondary:hover {
+  background: rgba(139, 94, 60, 0.08);
+  border-color: var(--copper);
+}
+
+button.secondary:focus-visible {
+  outline: 2px solid var(--copper);
+  outline-offset: 2px;
+}
+
+button.secondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+#restartBtn {
+  align-self: flex-start;
+}
+
+/* ─── Footer ─── */
+.footer {
+  margin-top: 28px;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── Waiting Overlay (Telegraph Dispatch) ─── */
+.waiting-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 22, 38, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  z-index: 1000;
+  backdrop-filter: blur(3px);
+}
+
+.waiting-dialog {
+  background: #0f1a2e;
+  color: var(--gold-text);
+  border-radius: 2px;
+  padding: 28px clamp(28px, 6vw, 42px);
+  max-width: min(440px, 100%);
+  box-shadow:
+    0 0 0 1px rgba(212, 183, 106, 0.15),
+    0 24px 60px rgba(10, 16, 30, 0.5);
+  text-align: center;
+  line-height: 1.65;
+  font-family: 'Special Elite', monospace;
+  border: 1px solid rgba(212, 183, 106, 0.12);
+}
+
+.waiting-header {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: var(--gold-light);
+  border-bottom: 1px solid rgba(212, 183, 106, 0.15);
+  padding-bottom: 12px;
+}
+
+.waiting-dialog p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: rgba(240, 234, 214, 0.6);
+  margin: 0;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  header {
+    padding: 20px;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+  }
+
+  main {
+    padding: 20px 16px 64px;
+  }
+
+  .panel {
+    margin-bottom: 18px;
+    padding: 20px 16px;
+  }
+
+  .panel::before {
+    left: 12px;
+    right: 12px;
+  }
+
+  button.option {
+    padding: 12px 14px 12px 16px;
+    font-size: 0.96rem;
+  }
+
+  .stats {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+
+  .cta-button {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  button.secondary {
+    width: 100%;
+  }
+
+  .options::before {
+    letter-spacing: 0.15em;
+    font-size: 0.8rem;
+  }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

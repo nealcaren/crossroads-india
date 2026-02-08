@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Last Maharaja: Survival 1790-1857</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <a href="../index.html" style="position:fixed;top:0.75rem;left:1rem;z-index:9999;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:#d4a843;opacity:0.5;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">&larr; Crossroads</a>
+
+    <!-- INTRO SCREEN -->
+    <div id="intro-screen" class="intro-screen">
+        <div class="intro-content">
+            <h1 class="intro-title">The Last Maharaja</h1>
+            <p class="intro-subtitle">A Game of Sovereignty & Survival</p>
+            <div class="intro-divider"></div>
+            <p class="intro-text">
+                The year is 1790. The Mughal Empire has crumbled. The East India Company grows
+                stronger with each passing season. As ruler of a Princely State, you must navigate
+                treaties, cultural upheaval, and imperial ambition to keep your kingdom alive.
+            </p>
+            <p class="intro-text">
+                Balance three forces&mdash;your <strong>Treasury</strong>, <strong>British Favor</strong>,
+                and <strong>People's Loyalty</strong>&mdash;the "Iron Triangle" of survival.
+                If any reaches zero, your reign ends. Survive until 1857 and the rules change forever.
+            </p>
+            <div class="intro-mechanics">
+                <div class="mechanic">
+                    <span class="mechanic-icon">&#9878;</span>
+                    <span class="mechanic-label">Treasury</span>
+                    <span class="mechanic-desc">Fiscal capacity to fund your state</span>
+                </div>
+                <div class="mechanic">
+                    <span class="mechanic-icon">&#9873;</span>
+                    <span class="mechanic-label">British Favor</span>
+                    <span class="mechanic-desc">Diplomatic standing with the Company</span>
+                </div>
+                <div class="mechanic">
+                    <span class="mechanic-icon">&#9829;</span>
+                    <span class="mechanic-label">Loyalty</span>
+                    <span class="mechanic-desc">Your people's faith in your rule</span>
+                </div>
+            </div>
+            <button class="start-btn" onclick="startGame()">Begin Your Reign</button>
+        </div>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="game-container hidden">
+        <header>
+            <h1>The Last Maharaja</h1>
+            <div id="year-display">
+                <span class="era-label" id="era-label">The Military-Fiscal Trap</span>
+                <span class="year-text">Year: <strong id="year">1790</strong></span>
+            </div>
+        </header>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+            <div class="timeline-bar">
+                <div id="timeline-fill" class="timeline-fill" style="width: 0%;"></div>
+            </div>
+            <div class="timeline-labels">
+                <span>1790</span>
+                <span>1857</span>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label"><span class="stat-icon">&#9878;</span> Treasury</div>
+                <div class="stat-value" id="val-treasury">50</div>
+                <div class="progress-bar"><div id="bar-treasury" class="fill" style="width: 50%;"></div></div>
+                <div class="stat-change" id="change-treasury"></div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label"><span class="stat-icon">&#9873;</span> Favor</div>
+                <div class="stat-value" id="val-british">50</div>
+                <div class="progress-bar"><div id="bar-british" class="fill" style="width: 50%;"></div></div>
+                <div class="stat-change" id="change-british"></div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label"><span class="stat-icon">&#9829;</span> Loyalty</div>
+                <div class="stat-value" id="val-loyalty">50</div>
+                <div class="progress-bar"><div id="bar-loyalty" class="fill" style="width: 50%;"></div></div>
+                <div class="stat-change" id="change-loyalty"></div>
+            </div>
+        </div>
+
+        <!-- Event Card -->
+        <div id="card-area" class="card">
+            <div class="card-header">
+                <span class="card-era" id="card-era"></span>
+                <span class="card-year" id="card-year"></span>
+            </div>
+            <div class="advisor-badge" id="advisor-badge">
+                <span class="advisor-icon" id="advisor-icon"></span>
+                <span class="advisor-name" id="advisor-name"></span>
+            </div>
+            <h2 id="event-title"></h2>
+            <p id="event-desc"></p>
+            <div class="historical-note hidden" id="historical-note">
+                <span class="note-label">Historical Context</span>
+                <p id="note-text"></p>
+            </div>
+            <div class="choice-container" id="choice-container">
+                <button id="btn-left" class="choice-btn" onclick="makeChoice('left')"></button>
+                <button id="btn-right" class="choice-btn" onclick="makeChoice('right')"></button>
+            </div>
+        </div>
+
+        <!-- Outcome Feedback -->
+        <div id="outcome-screen" class="card hidden">
+            <h2 id="outcome-title" class="outcome-title"></h2>
+            <p id="outcome-msg" class="outcome-msg"></p>
+            <div class="outcome-effects" id="outcome-effects"></div>
+            <button class="continue-btn" onclick="nextEvent()">Continue</button>
+        </div>
+
+        <!-- Event Counter -->
+        <div class="event-counter">
+            Decision <span id="event-num">1</span> of <span id="event-total">22</span>
+        </div>
+
+        <!-- Game Over -->
+        <div id="game-over" class="game-over-overlay hidden">
+            <div class="game-over-box">
+                <div class="game-over-icon" id="game-over-icon"></div>
+                <h2 id="end-title"></h2>
+                <p id="end-year"></p>
+                <p id="end-reason"></p>
+                <div class="end-stats" id="end-stats"></div>
+                <button class="reset-btn" onclick="location.reload()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
