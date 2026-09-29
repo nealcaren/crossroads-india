@@ -610,6 +610,32 @@ header h1 {
     color: var(--gold-light);
 }
 
+/* Reflection prompt */
+.reflection {
+    background: rgba(212, 168, 67, 0.04);
+    border: 1px solid var(--border-gold);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.reflection-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.6rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+}
+
+.reflection p {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--ivory-dim);
+    margin: 4px 0 0;
+}
+
 .reset-btn {
     padding: 12px 32px;
     font-family: 'Cinzel', serif;
