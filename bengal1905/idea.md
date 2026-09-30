@@ -1,69 +1,30 @@
-# Divide and Rule: The Bengal Partition Crisis of 1905
+# Divide and Rule: Bengal 1905–1908
 
-## Historical Context
+## Purpose
 
-In 1905, Lord Curzon, Viceroy of India, partitioned the province of Bengal — splitting it into a Hindu-majority west and a Muslim-majority east. The official justification was administrative efficiency. The real motive was political: to divide the most politically active province in India and weaken the growing nationalist movement.
-
-It backfired spectacularly. The Partition triggered the Swadeshi movement — a massive boycott of British goods, the rise of "extremist" nationalism under leaders like Tilak and Aurobindo, and a fundamental split within the Indian National Congress between moderates who wanted reform within the system and radicals who wanted the system gone. The Partition was eventually annulled in 1911, but the forces it unleashed — mass politics, economic nationalism, revolutionary violence — never went back in the bottle.
-
-This game puts you on the other side of that crisis: inside the colonial administration, watching your policy ignite a subcontinent.
+The in-class mini-scenario (*The Swadeshi Crisis*) has students build the anti-partition coalition from the Indian side. This game shows the same crisis from inside the Raj, so students see divide and rule as a working policy with costs, not a slogan. Students who draw the British or Muslim Leaders roles in class arrive knowing the pressures those roles face.
 
 ## You Play As
 
-The **private secretary to the Viceroy of India**, stationed in Calcutta. You don't make policy — Curzon does that — but you manage the response. Every dispatch that crosses your desk demands a decision: crack down or conciliate? Engage the moderates or isolate the radicals? Reassure London or tell the truth?
+An officer in Home Secretary Herbert Risley's department, October 1905 to December 1908. Risley's 1904 memo is the brief: "Bengal united is a power. Bengal divided will pull in different ways."
 
-## The Goal
+## Mechanics
 
-Survive from August 1905 through December 1908 without losing control of the situation. The Partition is already done — you can't undo it. You can only manage the consequences.
+**Network.** The Raj sits at the center. Five groups ring it: Congress Moderates, Extremists, Students, Muslim Leaders of East Bengal, and Merchants and Zamindars.
 
-## Core Mechanic: Dispatch Cycles
+- **Loyalty ties** (blue spokes, Raj to each group): Constitutional Channel, Deterrence, Colleges & Careers, Loyalist Compact, Trade & Credit. If any reaches 0, you lose control of that group.
+- **Opposition ties** (red, among the five groups). You want them weak. Five of them (Congress Unity and the four Hindu-Muslim ties) form the **National Front** gauge. If its average reaches 65, the movement has united and you lose; you have no troops to spare.
 
-The game moves in turns, each structured as a "dispatch cycle." You receive a briefing on the current situation — drawn from real historical events — and choose from 3–5 possible responses. Each choice shifts your four core stats, and the cumulative effect of your decisions determines whether you hold the line or lose the province.
+**Turns.** Seventeen historical events, October 1905 to December 1908. Each event shifts some ties. You answer with one of three British tools (offers, crackdowns, leaks, concessions). Each tool helps one tie and costs another. Untouched opposition ties grow by 2 each turn; untouched loyalty ties erode by 1.
 
-A **telegraph overlay** appears between turns, simulating the time it takes for your orders to travel and take effect. These interludes include atmospheric narrative — reports from district officers, intercepted letters, rumors from the bazaar — that build the world and foreshadow coming crises.
+**Balance** (simulated over 4,000 games per strategy): random play wins about 30%; a balanced player wins; a player who chases the National Front and ignores loyalty always loses the Moderates.
 
-### Four Core Stats
+**Visuals.** Three line weights: National Front ties thick and bright, loyalty spokes thick blue, other movement ties faint. While a decision is open, every tie any option would change is emphasized and the rest dim.
 
-- **Legitimacy (0–100):** Do Indian elites — moderate Congress leaders, loyal civil servants, sympathetic editors — still trust the Raj? Legitimacy is your political capital. Spend it on crackdowns and it drains. Earn it through engagement and reform.
-- **Local Stability (0–100):** Can you prevent riots, strikes, and political violence? Stability reflects the situation on the ground in Bengal. It can collapse fast if you misread the mood.
-- **Swadeshi Momentum (0–100):** The growth of the boycott movement. Unlike the other stats, **higher is worse** — if Swadeshi Momentum exceeds 85, the movement has become self-sustaining and you've lost. Every heavy-handed response risks accelerating it.
-- **Reputation (0–100):** Your standing in London and Delhi. Reputation influences the narrative tone but won't end the game on its own. It reflects whether you're seen as competent or as the man who lost Bengal.
+## Events
 
-### The Trap
+Partition Day; students on the pickets (the Carlyle Circular); bonfires of Manchester cloth; the Nawab's debts (the 1906 loan); the Barisal conference; the Simla Deputation; the founding of the Muslim League; national schools; pickets turning on Muslim traders; the Comilla and Jamalpur riots; deportations and the meetings ordinance; the Surat split; the Muzaffarpur bomb; the Alipore conspiracy; Tilak's sentence; the December 1908 deportations; the Morley-Minto reforms.
 
-The same structural dilemma as every game in the series: actions that help one stat hurt another. Arresting agitators may restore short-term Stability but accelerates Swadeshi Momentum and erodes Legitimacy. Engaging moderates may build Legitimacy but looks weak to London (Reputation). Ignoring the movement preserves Reputation until the day it can't be ignored anymore.
+## Endings
 
-## Multi-Page Prologue
-
-Before play begins, five opening vignettes set the historical context — Curzon's ambitions, the state of Bengali politics, the economic arguments for partition, the first stirrings of opposition. These aren't skippable flavor text; they establish the facts students need to make informed decisions during play.
-
-## Key Historical Figures
-
-- **Lord Curzon** — the Viceroy whose vision you're executing
-- **Surendranath Banerjee** — moderate Congress leader, willing to negotiate
-- **Bipin Chandra Pal** — radical nationalist, unwilling to compromise
-- **Aurobindo Ghose** — revolutionary thinker, the ideological engine of extremism
-- **Rabindranath Tagore** — cultural giant whose Rakhi ceremony united Hindus and Muslims against partition
-- **Nawab Salimullah of Dhaka** — Muslim leader who supported partition as beneficial for Muslims
-
-## Glossary System
-
-Colonial India had its own vocabulary — Section 144, the Vernacular Press Act, swadeshi, boycott, bhadralok, lathi charge. The game detects these terms in the narrative text and provides hover tooltips with concise historical explanations. Students learn the language of empire as they play.
-
-## Win/Loss Conditions
-
-- **Immediate defeat** if Legitimacy < 20, Stability < 20, or Swadeshi Momentum > 85
-- **Victory** if you survive through December 31, 1908
-- Historical note displayed at game end: the Partition was actually annulled in 1911. The player "wins" by lasting three years — but the Raj eventually lost.
-
-## What Students Learn
-
-- **"Divide and rule" as specific policy:** Not a metaphor but a concrete administrative strategy with identifiable authors, motives, and consequences
-- **The colonial administrator's perspective:** The Raj wasn't a monolith; it was staffed by people making choices under pressure, often badly
-- **How movements grow:** The Swadeshi movement didn't appear overnight — it was fueled by specific policy failures, amplified by specific leaders, and shaped by the government's own responses
-- **The moderate-radical split:** The Congress divided over tactics, not goals. Understanding *why* helps students see the same dynamics in other movements.
-- **Unintended consequences:** The Partition was meant to weaken nationalism. It created it.
-
-## Design Aesthetic
-
-Colonial bureaucracy — parchment tones, navy headers, copper accents, serif-heavy typography (Crimson Pro for body, Playfair Display for headers). The visual language says: you are inside the machine of empire, reading dispatches and issuing orders. Stat tiles glow green, gold, or red based on severity. Trend arrows (▲▼) show whether your last decision helped or hurt. The overall feeling is of formal authority — but the formality is a thin veneer over a system losing control.
+Victory: the partition holds in 1908, but the ending notes that it was annulled in 1911 while separate electorates lasted until 1947. Each defeat (the movement unites, or a loyalty tie breaks) has its own narration. All endings share reflection questions tying the game to the in-class Swadeshi Crisis and to Simla.

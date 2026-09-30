@@ -2,913 +2,919 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Divide and Rule: The Bengal Partition Crisis of 1905</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+  <title>Bengal 1905: Divide and Rule</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 <a href="../../index.html" style="position:fixed;top:0.75rem;left:1rem;z-index:9999;font-family:'Playfair Display',serif;font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:#d4b76a;opacity:0.5;text-decoration:none;transition:opacity 0.2s" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'">&larr; Crossroads</a>
+
 <header>
-  <div class="header-row">
-    <h1>Divide and Rule: The Bengal Partition Crisis of 1905</h1>
-    <span id="versionBadge" class="version-badge"></span>
-  </div>
+  <h1>Bengal 1905: Divide and Rule</h1>
+  <div class="subtitle">The Partition Crisis from Inside the Raj</div>
 </header>
+
 <main>
-  <div class="panel vignette-panel" id="vignettePanel">
+  <!-- VIGNETTE -->
+  <div class="vignette-panel" id="vignettePanel">
     <div class="vignette-header">
-      <h2 id="vignetteTitle">Loading briefing…</h2>
+      <h2 id="vignetteTitle">Loading...</h2>
     </div>
     <div id="vignetteText" class="vignette-text"></div>
     <button id="vignetteNext" class="cta-button" type="button">Continue</button>
   </div>
 
-  <div class="panel hidden" id="statsPanel">
-    <div id="stats" class="stats"></div>
-  </div>
-
-  <div class="panel hidden" id="gamePanel">
-    <div id="narration" class="narration"></div>
-    <div id="options" class="options"></div>
-    <div id="statusMessage" class="status"></div>
-    <div class="footer">Choose one directive to proceed.</div>
-    <button class="secondary hidden" id="restartBtn" type="button">Start New Game</button>
-  </div>
-  <div id="waitingOverlay" class="waiting-overlay hidden" role="status" aria-live="assertive">
-    <div class="waiting-dialog">
-      <div class="waiting-header">Dispatch Pending</div>
-      <p>The telegraph clerks labour furiously; a reply from Calcutta is en route…</p>
+  <!-- GAME -->
+  <div class="hidden" id="gameContainer">
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar">
+      <span class="game-date" id="gameDate"></span>
+      <span class="front-gauge" id="frontGauge" title="Average of Congress Unity and the four Hindu-Muslim ties. You lose if it reaches the threshold."></span>
+      <div class="progress-dots" id="progressDots"></div>
     </div>
+
+    <!-- Network diagram -->
+    <div class="network-container">
+      <svg id="networkSvg" class="network-svg" viewBox="0 0 480 420" xmlns="http://www.w3.org/2000/svg">
+        <g id="svgTies"></g>
+        <g id="svgNodes"></g>
+        <g id="svgIndicators"></g>
+      </svg>
+      <div class="telegraph-overlay hidden" id="telegraphOverlay">
+        <span id="telegraphText"></span>
+      </div>
+      <div class="action-overlay" id="actionOverlay"></div>
+      <div class="tie-legend">
+        <span class="lg lg-loyal">Loyalty to the Raj: keep above 0</span>
+        <span class="lg lg-front">National Front: keep low</span>
+        <span class="lg lg-opp">Other movement ties</span>
+      </div>
+    </div>
+
+    <!-- Event text (compact) -->
+    <div class="event-compact" id="eventCompact">
+      <div class="event-title" id="eventTitle"></div>
+      <div class="event-narration" id="eventNarration"></div>
+      <button class="learn-more-toggle hidden" id="learnMoreToggle" type="button">Learn more &#9656;</button>
+      <div class="learn-more-content" id="learnMoreContent"></div>
+    </div>
+
+    <!-- Action cards -->
+    <div class="action-area" id="actionArea">
+      <div class="action-cards" id="actionCards"></div>
+    </div>
+
+    <!-- Tutorial hint -->
+    <div class="tutorial-hint hidden" id="tutorialHint"></div>
+
+    <!-- End game panels -->
+    <div class="status-message" id="statusMessage"></div>
+    <div class="score-panel hidden" id="scorePanel">
+      <div class="score-total" id="scoreTotal"></div>
+      <div class="score-label">Final National Front</div>
+      <div class="score-rank" id="scoreRank"></div>
+    </div>
+    <div class="reflection-box hidden" id="reflectionBox"></div>
+    <button class="secondary hidden" id="restartBtn" type="button">Play Again</button>
   </div>
 </main>
 
 <script src="content.js"></script>
 <script>
-const STORY = window.BENGAL_STORY || {};
-const GAME_VERSION = STORY.GAME_VERSION || 'v2.1.0';
-const OPENING_VIGNETTE = window.OPENING_VIGNETTE || null;
+(function() {
+  'use strict';
 
-const FALLBACK_VIGNETTE_PAGES = [
-  {
-    title: "August 1905 — Simla",
-    text: `The monsoon clouds hang heavy over the Viceregal Lodge. You've served as private secretary to Lord Curzon for eighteen months now, long enough to read the particular tension in his jawline as he slides a leather portfolio across the mahogany desk.
+  /* ═══════════════════════════════════════════════════
+     DATA
+     ═══════════════════════════════════════════════════ */
 
-"The Partition will be announced within weeks," he says. "Bengal is unwieldy—78 million souls, impossible to govern effectively. We're creating two provinces: a Muslim-majority east with its capital at Dacca, and a Hindu-majority west centered on Calcutta."
+  const VIGNETTE = window.OPENING_VIGNETTE;
+  const NODE_DEFS = window.NODE_DEFINITIONS || [];
+  const TIE_DEFS = window.TIE_DEFINITIONS || [];
+  const EVENTS = window.EVENT_CARDS || [];
+  const TUTORIAL = window.TUTORIAL_EVENT;
+  const DEFEATS = window.DEFEAT_NARRATIONS || {};
+  const VICTORY = window.VICTORY_NARRATION || {};
+  const GLOSSARY_ENTRIES = window.GLOSSARY || [];
 
-On paper, it's administrative reform. The files cite population density, revenue collection challenges, the difficulty of managing such vast territory.
+  /* ═══════════════════════════════════════════════════
+     GLOSSARY
+     ═══════════════════════════════════════════════════ */
 
-But you've read the intelligence reports. You know what the Bengali press is saying.`,
-    button: "Continue"
-  },
-  {
-    title: "The Calcutta Papers",
-    text: `Three newspapers sit before you, each telling a different story:
+  const GLOSSARY_SORTED = [...GLOSSARY_ENTRIES].sort((a, b) => b.term.length - a.term.length);
+  const GLOSSARY_PATTERN = GLOSSARY_SORTED.length
+    ? new RegExp(`\\b(${GLOSSARY_SORTED.map(e => e.term.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')).join('|')})\\b`, 'gi')
+    : null;
 
-**The Englishman** (British-owned): "Lord Curzon's masterstroke will bring efficient governance to India's most populous province."
-
-**Amrita Bazar Patrika** (Bengali nationalist): "The Partition is a dagger aimed at Bengali unity—splitting Hindu from Muslim, severing our cultural heartland."
-
-**The Bengalee** (edited by Surendranath Banerjee): "Partition invites profound disappointment, yet our response must remain constitutional—petitions, not bombs."
-
-But there are newer voices too. Younger men—Bipin Chandra Pal, Aurobindo Ghose—speak of *swadeshi* (own-country), of boycotting British goods entirely. Of meeting foreign rule not with petitions, but with resistance.
-
-The question everyone whispers: Is this really about administration? Or is it "divide and rule"?`,
-    button: "Continue"
-  },
-  {
-    title: "Your Task",
-    text: `Lord Curzon leans back. "The decision is made. London supports it. But implementation—that's where empires are won or lost."
-
-He needs you to manage what comes next. The official announcement. The inevitable protests. The competing factions within the Indian political class—moderates who still believe in petitions and constitutional reform, and extremists who speak openly of driving the British from India.
-
-"You'll have broad discretion," Curzon continues. "Suppress sedition, certainly. But also—consider concessions where prudent. Industrial grants, educational reforms, consultation with loyal elements. We must maintain order without igniting rebellion."
-
-He pauses at the door. "The Partition is administrative necessity. But Bengal is... passionate. Literate. They produce poets and revolutionaries in equal measure. Don't let it become a spark."
-
-The leather folder contains your initial briefing papers. The choices you make in the coming months will shape whether this reform strengthens British India—or begins its unraveling.`,
-    button: "Continue"
-  },
-  {
-    title: "Your Goals",
-    text: `As the Viceroy's private secretary, you must navigate the crisis of the Bengal Partition. Your decisions will be measured across four key pressures:
-
-**Legitimacy** — Does the British administration maintain credibility with Indian elites and the wider public?
-
-**Local Stability** — Can you prevent the situation from tipping into riots, strikes, or violence?
-
-**Swadeshi Momentum** — The boycott movement is growing. Will you contain it, redirect it, or concede ground?
-
-**Reputation** — In London and Delhi, are you judged a steady hand or a liability to imperial governance?
-
-The game will surface the dilemmas facing colonial administrators: how to project authority without provoking revolt, how to negotiate with moderate nationalists while confronting radicals, and how economic protest became a crucible for Indian self-rule.
-
-History remembers that the Partition was annulled in 1911. Your decisions will show why.`,
-    button: "Continue"
-  },
-  {
-    title: "Game Rules",
-    text: `Your post lasts only if the Raj believes you can keep Bengal orderly.
-
-You will be **removed from your post** if any of the following happen:
-- Legitimacy collapses (value < 20) — your administration loses the confidence of Calcutta and London alike.
-- Local Stability collapses (value < 20) — unrest overwhelms your ability to govern.
-- Swadeshi Momentum becomes unstoppable (value > 85) — the boycott makes the Partition unworkable.
-
-You will **survive to the end of 1908** if none of those crises occur before the calendar reaches 31 December 1908.
-
-Every turn advances time; every decision shifts the numbers. Choose with care.`,
-    button: "Begin Game"
+  function escapeHtml(s) {
+    return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c] || c));
   }
-];
+  function escapeAttr(s) { return escapeHtml(s).replace(/`/g, '&#96;'); }
 
-let gameState = null;
-let vignettePages = [];
-let currentVignetteIndex = 0;
-let gameReady = false;
-let gameOver = false;
-const waitingOverlay = document.getElementById('waitingOverlay');
-let previousState = null;
-const DISPATCH_SCENES = [
-[
-    "The telegraph clerks labour furiously; a reply from Calcutta is en route…",
-    "Cipher officers double-check the codebook, unwilling to risk a misread dispatch…",
-    "From the counting house, a runner signals the lines are still clear…",
-    "Ink dries on the Viceroy's marginalia; the return message is nearly upon us…"
-  ],
-  [
-    "Messenger pigeons beat the air above Writers' Building, searching for a familiar perch…",
-    "The Morse key clatters, pauses, then clatters again—someone is editing the reply midstream…",
-    "A clerk rewinds the wax cylinder recorder, anxious not to miss a single pulse…",
-    "Bootheels echo in the corridor; an orderly hurries forward with the sealed note…"
-  ],
-  [
-    "On Eden Gardens, officers halt their cricket as the signal flag rises over the telegraph mast…",
-    "A draughtsman traces troop dispositions while waiting for confirmation from Fort William…",
-    "The Resident's office dimly glows; hurricane lamps are trimmed to welcome the reply…",
-    "Stamping wax is warmed—only the Governor-General's counter-signature remains…"
-  ],
-  [
-    "A punkah-wallah fans the cipher room while three officers debate a contested word…",
-    "The District Magistrate's runner arrives breathless; his dispatch pouch is unopened still…",
-    "Monsoon rain drums the roof of the telegraph office—the line holds, barely…",
-    "A junior secretary blots the fair copy, checking twice for transcription errors…"
-  ],
-  [
-    "Hoofbeats on Chowringhee Road—the mounted courier has made good time from Government House…",
-    "In the Registry, a clerk thumbs through precedent files while the response is drafted…",
-    "The Commissioner's aide-de-camp waits at the door, telegram form in hand…",
-    "Sealing wax hisses as it meets the brass stamp; authentication complete…"
-  ],
-  [
-    "A lamp flickers in the Police Commissioner's window—his night shift continues…",
-    "The railway telegraph reports all lines north are functioning; the message will arrive…",
-    "Steam whistles from the harbor carry across Dalhousie Square—a ship brings dispatches from Bombay…",
-    "Your deputy reviews the filing system, ensuring no prior directive contradicts what comes next…"
-  ],
-  [
-    "College Square lies quiet in the pre-dawn hours; intelligence officers take notes from the shadows…",
-    "A bearer refills the inkwell at your desk—correspondence must be answered promptly…",
-    "The leather portfolio is retrieved from the safe; only certain eyes may read what it contains…",
-    "Footsteps ascend the marble staircase; someone carries news from the Secretariat…"
-  ],
-  [
-    "At Howrah Station, the overnight mail train exhales steam—diplomatic bags are unloaded first…",
-    "A cartographer updates the wall map with fresh intelligence; borders shift in red ink…",
-    "The duty officer signs the logbook, noting the hour of receipt and the seal's condition…",
-    "Through the jalousie shutters, you glimpse a runner crossing the courtyard at speed…"
-  ],
-  [
-    "The Viceroy's private secretary compares three draft responses, selecting the least provocative…",
-    "In the cantonment, a major pauses his morning drill to read an urgent communiqué…",
-    "Clerks in the Finance Department tally the cost of your last decision; figures are being compiled…",
-    "A confidential memorandum arrives from London—weeks old, but still relevant to what comes next…"
-  ],
-  [
-    "The Intelligence Bureau's daily summary is typed, retyped, then marked for your eyes only…",
-    "A district officer's handwritten report arrives mud-stained; he rode through the night to send it…",
-    "The cipher clerk triple-checks the one-time pad; this message cannot be misread…",
-    "At the Press Trust, compositors set tomorrow's headlines—they know before the public does…"
-  ],
-  [
-    "A telegram arrives from Simla, flagged 'IMMEDIATE'—the Viceroy has taken note…",
-    "The stationmaster at Sealdah signals all clear; no sabotage on the northern line today…",
-    "Your morning tea grows cold as you await confirmation from three separate departments…",
-    "In the archives, a researcher pulls the 1857 files—precedent for emergency powers, should you need them…"
-  ],
-  [
-    "A despatch rider dismounts in the courtyard, his satchel bearing the Governor's seal…",
-    "The Bengali press has gotten wind of something; your press liaison prepares a statement…",
-    "From Dacca, a coded message: Nawab Salimullah's response to your last communication…",
-    "The clock in the Council Chamber strikes the hour; decisions made now will ripple outward…"
-  ]
-
-];
-let dispatchTimer = null;
-let dispatchIndex = 0;
-let dispatchScene = DISPATCH_SCENES[0];
-
-const GLOSSARY_ENTRIES = [
-  {
-    term: 'Lord Curzon',
-    description: 'George Nathaniel Curzon, Viceroy of India (1899–1905), who championed the partition for administrative reasons.'
-  },
-  {
-    term: 'Section 144',
-    description: 'A colonial-era regulation allowing local officials to prohibit assemblies and impose curfews when public order is threatened.'
-  },
-  {
-    term: 'Vernacular Press Act',
-    description: 'An 1878 law enabling censorship or shutdown of Indian-language newspapers deemed seditious by the Raj.'
-  },
-  {
-    term: 'CID',
-    description: 'The Criminal Investigation Department, British India’s intelligence branch charged with monitoring nationalist activity.'
-  },
-  {
-    term: 'Surendranath Banerjee',
-    description: 'Moderate Indian National Congress leader who favoured petitions and constitutional protest against the partition.'
-  },
-  {
-    term: 'Bipin Chandra Pal',
-    description: 'A leading Swadeshi organiser urging boycott of British goods and advocating more assertive resistance.'
-  },
-  {
-    term: 'Aurobindo Ghose',
-    description: 'Nationalist intellectual who left the civil service to champion passive resistance and cultural revival.'
-  },
-  {
-    term: 'Rabindranath Tagore',
-    description: 'Bengali poet and Nobel laureate who mobilised cultural opposition to partition, including unity ceremonies like Raksha Bandhan.'
-  },
-  {
-    term: 'swadeshi',
-    description: 'From Sanskrit for “of one’s own country”; the boycott movement promoting indigenous industry over imported British goods.'
-  },
-  {
-    term: 'Muslim League',
-    description: 'Political organisation founded in 1906 to represent Muslim interests while engaging with imperial authorities.'
-  },
-  {
-    term: 'Indian National Congress',
-    description: 'Pan-Indian political forum split in 1905 between moderates seeking petitions and extremists pushing direct action.'
-  },
-  {
-    term: 'Dacca',
-    description: 'Planned capital of the new Eastern Bengal and Assam province; today’s Dhaka in Bangladesh.'
-  },
-  {
-    term: 'Calcutta',
-    description: 'Seat of the Bengal government and hotbed of anti-partition agitation until the imperial capital shifted to Delhi in 1911.'
-  }
-].sort((a, b) => b.term.length - a.term.length);
-
-const GLOSSARY_PATTERN = new RegExp(
-  `\\b(${GLOSSARY_ENTRIES.map(({ term }) => term.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&').replace(/\s+/g, '::SPACE::')).join('|')})\\b`,
-  'gi'
-);
-
-function setOverlayMessage(text) {
-  const paragraph = waitingOverlay ? waitingOverlay.querySelector('p') : null;
-  if (paragraph) {
-    paragraph.textContent = text;
-  }
-}
-
-function updateVersionBadge(version) {
-  const badge = document.getElementById('versionBadge');
-  if (badge) {
-    badge.textContent = version || GAME_VERSION;
-  }
-}
-
-function scrollToTop() {
-  const options = { top: 0, behavior: 'smooth' };
-  window.scrollTo(options);
-  if ('scrollTo' in window && 'visualViewport' in window && window.visualViewport) {
-    setTimeout(() => window.scrollTo(options), 200);
-    setTimeout(() => window.scrollTo(options), 400);
-  }
-}
-
-function startDispatchCycle() {
-  if (!waitingOverlay) return;
-  dispatchScene = DISPATCH_SCENES[Math.floor(Math.random() * DISPATCH_SCENES.length)];
-  dispatchIndex = 0;
-  setOverlayMessage(dispatchScene[dispatchIndex]);
-  stopDispatchCycle();
-  dispatchTimer = setInterval(() => {
-    dispatchIndex += 1;
-    if (dispatchIndex >= dispatchScene.length) {
-      dispatchIndex = dispatchScene.length - 1;
-    }
-    setOverlayMessage(dispatchScene[dispatchIndex]);
-  }, 4000);
-}
-
-function stopDispatchCycle() {
-  if (dispatchTimer) {
-    clearInterval(dispatchTimer);
-    dispatchTimer = null;
-  }
-}
-
-function escapeHtml(raw) {
-  return (raw || '').replace(/[&<>"']/g, (ch) => {
-    switch (ch) {
-      case '&': return '&amp;';
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '"': return '&quot;';
-      case "'": return '&#39;';
-      default: return ch;
-    }
-  });
-}
-
-function escapeAttr(raw) {
-  return escapeHtml(raw).replace(/`/g, '&#96;');
-}
-
-function wrapBlockquotes(html) {
-  return html.replace(/<p>&gt;\s?([\s\S]*?)<\/p>/g, (_match, body) => {
-    const cleaned = body.replace(/<br\/>/g, '<br/>');
-    return `<blockquote>${cleaned}</blockquote>`;
-  });
-}
-
-function convertTimelineBlocks(text) {
-  return text.replace(/\[Timeline • ([^\]]+)\]\s*([\s\S]*?)(?=(?:\n\n|$))/g, (_match, label, body) => {
-    const safeBody = body.trim();
-    return `<div class="timeline-event"><div class="timeline-event__label">Timeline • ${label}</div><div class="timeline-event__body">${safeBody}</div></div>`;
-  });
-}
-
-function applyGlossaryMarkup(html) {
-  return html.replace(GLOSSARY_PATTERN, (match) => {
-    const normalized = match.toLowerCase().replace(/\s+/g, ' ');
-    const entry = GLOSSARY_ENTRIES.find(({ term }) => term.toLowerCase() === normalized);
-    if (!entry) return match;
-    return `<span class="glossary-term" tabindex="0" data-description="${escapeAttr(entry.description)}">${match}</span>`;
-  });
-}
-
-function getFallbackVignette() {
-  return FALLBACK_VIGNETTE_PAGES.map(page => ({ ...page }));
-}
-
-function applyInlineMarkup(block) {
-  let escaped = escapeHtml(block)
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/__(.*?)__/g, '<strong>$1</strong>')
-    .replace(/\*(?!\*)([^*\n]+)\*/g, '<em>$1</em>')
-    .replace(/_(?!_)([^_\n]+)_/g, '<em>$1</em>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\n/g, '<br/>');
-  escaped = wrapBlockquotes(escaped);
-  return escaped;
-}
-
-function formatVignetteText(text) {
-  const trimmed = (text || '').trim();
-  if (!trimmed) return '';
-  const markup = trimmed
-    .split(/\n{2,}/)
-    .map(paragraph => `<p>${applyInlineMarkup(paragraph)}</p>`)
-    .join('');
-  return applyGlossaryMarkup(convertTimelineBlocks(markup));
-}
-
-function loadVignette() {
-  if (OPENING_VIGNETTE && Array.isArray(OPENING_VIGNETTE.pages) && OPENING_VIGNETTE.pages.length) {
-    vignettePages = OPENING_VIGNETTE.pages.map(page => ({ ...page }));
-    return;
-  }
-  vignettePages = getFallbackVignette();
-}
-
-function showVignettePage(index) {
-  if (!vignettePages.length) {
-    vignettePages = getFallbackVignette();
-  }
-  currentVignetteIndex = Math.min(Math.max(index, 0), vignettePages.length - 1);
-  const page = vignettePages[currentVignetteIndex] || {};
-  document.getElementById('vignetteTitle').textContent = page.title || 'Briefing';
-  document.getElementById('vignetteText').innerHTML = formatVignetteText(page.text || '');
-  const button = document.getElementById('vignetteNext');
-  const isLast = currentVignetteIndex === vignettePages.length - 1;
-  button.textContent = page.button || (isLast ? 'Begin Game' : 'Continue');
-  scrollToTop();
-}
-
-function resetInteractiveState() {
-  gameOver = false;
-  const optionsBox = document.getElementById('options');
-  if (optionsBox) {
-    optionsBox.innerHTML = '';
-  }
-  const statusEl = document.getElementById('statusMessage');
-  if (statusEl) {
-    statusEl.textContent = '';
-    statusEl.classList.remove('status-victory', 'status-defeat');
-  }
-  const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) {
-    restartBtn.classList.add('hidden');
-  }
-  const narration = document.getElementById('narration');
-  if (narration) {
-    narration.textContent = '';
-  }
-  previousState = null;
-}
-
-function beginGameFlow() {
-  resetInteractiveState();
-  gameReady = false;
-  document.getElementById('vignettePanel').classList.add('hidden');
-  document.getElementById('statsPanel').classList.remove('hidden');
-  document.getElementById('gamePanel').classList.remove('hidden');
-  gameState = newGameState();
-  gameReady = true;
-  renderStats(gameState);
-  updateVersionBadge(gameState.version || GAME_VERSION);
-  sendTurn(null);
-}
-
-const STATE_KEYS = ['date', 'legitimacy', 'local_stability', 'swadeshi_momentum', 'reputation', 'version', 'last_action'];
-const END_DATE = '1908-12-31';
-
-function newGameState() {
-  const startScene = STORY.SCENES ? STORY.SCENES[STORY.START_SCENE_ID] : null;
-  const startDate = (startScene && startScene.date) ? startScene.date : '1905-08-12';
-  return {
-    date: startDate,
-    legitimacy: 60,
-    local_stability: 60,
-    swadeshi_momentum: 40,
-    reputation: 50,
-    version: GAME_VERSION,
-    last_action: '',
-    scene_id: STORY.START_SCENE_ID,
-    flags: [],
-    history: [],
-    log: [],
-    game_status: { status: 'ongoing', reason: '', message: '' }
-  };
-}
-
-function parseDate(dateStr) {
-  if (!dateStr) return null;
-  const parts = String(dateStr).split('-').map(Number);
-  if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
-  return new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
-}
-
-function formatDate(dateObj) {
-  if (!dateObj) return null;
-  const y = dateObj.getUTCFullYear();
-  const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
-  const d = String(dateObj.getUTCDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function clamp(value, lo = 0, hi = 100) {
-  const num = Number(value);
-  if (Number.isNaN(num)) return lo;
-  return Math.max(lo, Math.min(Math.round(num), hi));
-}
-
-function flagSet(state) {
-  return new Set((state && state.flags) ? state.flags : []);
-}
-
-function matchesConditions(item, flags, lastAction) {
-  const requiresFlags = new Set(item.requires_flags || []);
-  const forbidsFlags = new Set(item.forbids_flags || []);
-  const requiresLast = new Set(item.requires_last_action || []);
-  if (requiresFlags.size) {
-    for (const flag of requiresFlags) {
-      if (!flags.has(flag)) return false;
-    }
-  }
-  for (const flag of forbidsFlags) {
-    if (flags.has(flag)) return false;
-  }
-  if (requiresLast.size && !requiresLast.has(lastAction)) {
-    return false;
-  }
-  return true;
-}
-
-function selectVariant(scene, state) {
-  const variants = scene.variants || [];
-  if (!variants.length) return null;
-  const flags = flagSet(state);
-  const lastAction = state.last_action;
-  for (const variant of variants) {
-    if (matchesConditions(variant, flags, lastAction)) {
-      return variant;
-    }
-  }
-  return variants[variants.length - 1];
-}
-
-function selectOptions(scene, state) {
-  const optionSets = scene.option_sets || [];
-  const flags = flagSet(state);
-  const lastAction = state.last_action;
-  for (const set of optionSets) {
-    if (matchesConditions(set, flags, lastAction)) {
-      const options = set.options || [];
-      return options.filter(opt => matchesConditions(opt, flags, lastAction));
-    }
-  }
-  const options = scene.options || [];
-  return options.filter(opt => matchesConditions(opt, flags, lastAction));
-}
-
-function ensureSceneDate(state, sceneId) {
-  const scene = STORY.SCENES ? STORY.SCENES[sceneId] : null;
-  if (!scene || !scene.date) return;
-  const sceneDate = parseDate(scene.date);
-  const currentDate = parseDate(state.date);
-  if (sceneDate && (!currentDate || sceneDate > currentDate)) {
-    state.date = formatDate(sceneDate);
-  }
-}
-
-function buildSceneResponse(sceneId, state) {
-  const scene = STORY.SCENES ? STORY.SCENES[sceneId] : null;
-  if (!scene) {
-    return { narration: "The file cabinet is empty; no further instructions are available.", options: [], learned: "" };
-  }
-  ensureSceneDate(state, sceneId);
-  const variant = selectVariant(scene, state) || {};
-  const narration = variant.narration || scene.narration || '';
-  const learned = variant.learned || scene.learned || '';
-  const options = selectOptions(scene, state).map(opt => ({ id: opt.id, label: opt.label }));
-  return { narration, learned, options };
-}
-
-function applyOption(state, option) {
-  const effects = option.effects || {};
-  Object.keys(effects).forEach(key => {
-    const current = Number(state[key] || 0);
-    if (!Number.isNaN(current)) {
-      state[key] = clamp(current + Number(effects[key] || 0));
-    }
-  });
-  const flags = flagSet(state);
-  (option.set_flags || []).forEach(flag => flags.add(flag));
-  (option.clear_flags || []).forEach(flag => flags.delete(flag));
-  state.flags = Array.from(flags);
-}
-
-function findOption(sceneId, choiceId, state) {
-  const scene = STORY.SCENES ? STORY.SCENES[sceneId] : null;
-  if (!scene) return null;
-  const options = selectOptions(scene, state);
-  return options.find(opt => opt.id === choiceId) || null;
-}
-
-function buildOutcomeNarration(reason) {
-  return (STORY.OUTCOME_TEXT && STORY.OUTCOME_TEXT[reason]) ? STORY.OUTCOME_TEXT[reason] : '';
-}
-
-function checkGameStatus(state) {
-  const legitimacy = state.legitimacy;
-  const stability = state.local_stability;
-  const swadeshi = state.swadeshi_momentum;
-  const dateObj = parseDate(state.date);
-  if (typeof legitimacy === 'number' && legitimacy < 20) {
-    return { status: 'defeat', reason: 'legitimacy_collapse', message: 'Legitimacy has collapsed beneath acceptable levels; Bengal no longer trusts the Raj\'s word.' };
-  }
-  if (typeof stability === 'number' && stability < 20) {
-    return { status: 'defeat', reason: 'stability_collapse', message: 'Local unrest spirals beyond control; the machinery of governance breaks under the strain.' };
-  }
-  if (typeof swadeshi === 'number' && swadeshi > 85) {
-    return { status: 'defeat', reason: 'swadeshi_unstoppable', message: 'The swadeshi movement achieves unstoppable momentum, making the partition untenable.' };
-  }
-  const endDate = parseDate(END_DATE);
-  if (dateObj && endDate && dateObj >= endDate) {
-    return { status: 'victory', reason: 'survived', message: 'You navigated the turbulence through the end of 1908 without catastrophe, keeping imperial directives intact.' };
-  }
-  return { status: 'ongoing', reason: '', message: '' };
-}
-
-function sanitizeState(state) {
-  const sanitized = {};
-  STATE_KEYS.forEach(key => {
-    sanitized[key] = state[key];
-  });
-  return sanitized;
-}
-
-function advanceTurn(choiceId) {
-  if (!gameState) return null;
-  const alreadyOver = gameState.game_status && (gameState.game_status.status === 'victory' || gameState.game_status.status === 'defeat');
-  let data;
-  if (alreadyOver) {
-    data = buildSceneResponse(gameState.scene_id, gameState);
-    data.options = [];
-    const reason = gameState.game_status ? gameState.game_status.reason : '';
-    const outcomeText = buildOutcomeNarration(reason);
-    if (outcomeText) {
-      data.narration = `${data.narration || ''}\n\n${outcomeText}`.trim();
-    }
-  } else {
-    if (choiceId) {
-      const option = findOption(gameState.scene_id, choiceId, gameState);
-      if (!option) {
-        throw new Error('Unknown option for current scene.');
-      }
-      applyOption(gameState, option);
-      gameState.last_action = choiceId;
-      gameState.history.push(choiceId);
-      gameState.scene_id = option.next || STORY.START_SCENE_ID;
-    }
-    ensureSceneDate(gameState, gameState.scene_id);
-    data = buildSceneResponse(gameState.scene_id, gameState);
-  }
-
-  if (data && data.narration) {
-    gameState.log.push(data.narration);
-  }
-
-  const statusInfo = checkGameStatus(gameState);
-  gameState.game_status = statusInfo;
-
-  if (statusInfo.status !== 'ongoing' && !alreadyOver) {
-    const outcome = buildOutcomeNarration(statusInfo.reason);
-    if (outcome) {
-      data.narration = `${data.narration || ''}\n\n${outcome}`.trim();
-    }
-    data.options = [];
-  }
-
-  data.state = sanitizeState(gameState);
-  data.game_status = statusInfo;
-  return data;
-}
-
-function renderStats(state) {
-  const statsGrid = document.getElementById('stats');
-  if (!statsGrid || !state) {
-    return;
-  }
-  const metrics = [
-    { label: 'Legitimacy', key: 'legitimacy', value: state.legitimacy },
-    { label: 'Local Stability', key: 'local_stability', value: state.local_stability },
-    { label: 'Swadeshi Momentum', key: 'swadeshi_momentum', value: state.swadeshi_momentum },
-    { label: 'Reputation', key: 'reputation', value: state.reputation }
-  ];
-
-  const cards = metrics.map(({ label, key, value }) => {
-    const statClass = getStatClass(key, value);
-    const numeric = Number.isFinite(Number(value)) ? Number(value) : null;
-    const descriptor = getStatDescriptor(key, value);
-    const tooltip = numeric !== null ? `title="Exact value: ${numeric}"` : '';
-    const trendMarkup = getTrendMarkup(key, value);
-    return `
-      <div class="stat ${statClass}">
-        <span class="stat-label">${label}</span>
-        <span class="stat-value" ${tooltip}>${descriptor}${trendMarkup}</span>
-        <span class="stat-numeric">${numeric !== null ? numeric : '—'}</span>
-      </div>
-    `;
-  }).join('');
-
-  statsGrid.innerHTML = `
-    <div class="stat stat-date">
-      <span class="stat-label">Date</span>
-      <span class="stat-value">${state.date ?? '—'}</span>
-    </div>
-    ${cards}
-  `;
-  previousState = {
-    legitimacy: state.legitimacy,
-    local_stability: state.local_stability,
-    swadeshi_momentum: state.swadeshi_momentum,
-    reputation: state.reputation
-  };
-}
-
-function getStatClass(key, rawValue) {
-  const value = Number(rawValue);
-  if (Number.isNaN(value)) {
-    return 'stat-neutral';
-  }
-  if (key === 'swadeshi_momentum') {
-    if (value > 80) return 'stat-critical';
-    if (value > 70) return 'stat-warning';
-    if (value <= 40) return 'stat-good';
-  } else if (key === 'legitimacy' || key === 'local_stability' || key === 'reputation') {
-    if (value < 25) return 'stat-critical';
-    if (value < 35) return 'stat-warning';
-    if (value >= 70) return 'stat-good';
-  }
-  return 'stat-neutral';
-}
-
-function getTrendMarkup(key, currentValue) {
-  if (!previousState) {
-    return '';
-  }
-  const previousValue = Number(previousState[key]);
-  const currentNumber = Number(currentValue);
-  if (Number.isNaN(previousValue) || Number.isNaN(currentNumber)) {
-    return '';
-  }
-  if (previousValue === currentNumber) {
-    return '';
-  }
-  const increased = currentNumber > previousValue;
-  const beneficial = isIncreaseBeneficial(key, increased);
-  const icon = increased ? '▲' : '▼';
-  const trendClass = increased ? (beneficial ? 'trend-up-good' : 'trend-up-bad') : (beneficial ? 'trend-down-good' : 'trend-down-bad');
-  return `<span class="trend-icon ${trendClass}" aria-hidden="true">${icon}</span>`;
-}
-
-function isIncreaseBeneficial(key, increased) {
-  // Returns true if the resulting change is beneficial.
-  if (key === 'swadeshi_momentum') {
-    return !increased;
-  }
-  return increased;
-}
-
-function getStatDescriptor(key, rawValue) {
-  const value = Number(rawValue);
-  if (Number.isNaN(value)) {
-    return 'Unknown';
-  }
-  if (key === 'swadeshi_momentum') {
-    if (value <= 30) return 'Dormant';
-    if (value <= 50) return 'Flickering';
-    if (value <= 70) return 'Surging';
-    if (value <= 85) return 'Blazing';
-    return 'Unstoppable';
-  }
-  if (value >= 80) return 'Commanding';
-  if (value >= 60) return 'Steady';
-  if (value >= 40) return 'Wavering';
-  if (value >= 25) return 'Precarious';
-  return 'Collapsed';
-}
-
-function renderTurn(data) {
-  if (!data) return;
-  const narrationEl = document.getElementById('narration');
-  narrationEl.innerHTML = formatVignetteText(data.narration || '');
-  if (data.state) {
-    renderStats(data.state);
-    updateVersionBadge(data.state.version || GAME_VERSION);
-  }
-  populateOptions(data.options || []);
-  scrollToTop();
-}
-
-function normalizeOption(option) {
-  if (!option) return null;
-  if (typeof option === 'string') {
-    return { id: option, label: option };
-  }
-  if (typeof option === 'object') {
-    const id = option.id || option.label || option.text;
-    const label = option.label || option.text || option.id || '';
-    if (!id || !label) return null;
-    return { id, label };
-  }
-  return null;
-}
-
-function populateOptions(options) {
-  const optBox = document.getElementById('options');
-  optBox.innerHTML = '';
-  (options || []).forEach(option => {
-    const normalized = normalizeOption(option);
-    if (!normalized) return;
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'option';
-    b.textContent = normalized.label;
-    b.onclick = () => sendTurn(normalized.id);
-    optBox.appendChild(b);
-  });
-}
-
-function setWaiting(isWaiting, message = '') {
-  const statusEl = document.getElementById('statusMessage');
-  const optionButtons = document.querySelectorAll('#options button.option');
-
-  if (isWaiting) {
-    statusEl.classList.remove('status-victory', 'status-defeat');
-    statusEl.textContent = '';
-    if (message) {
-      setOverlayMessage(message);
-    } else {
-      startDispatchCycle();
-    }
-    if (waitingOverlay) {
-      waitingOverlay.classList.remove('hidden');
-    }
-    optionButtons.forEach(btn => {
-      btn.disabled = true;
+  function applyGlossary(html) {
+    if (!GLOSSARY_PATTERN) return html;
+    return html.replace(GLOSSARY_PATTERN, match => {
+      const entry = GLOSSARY_SORTED.find(e => e.term.toLowerCase() === match.toLowerCase().replace(/\s+/g, ' '));
+      return entry ? `<span class="glossary-term" tabindex="0" data-description="${escapeAttr(entry.description)}">${match}</span>` : match;
     });
-  } else {
-    if (waitingOverlay) {
-      waitingOverlay.classList.add('hidden');
+  }
+
+  function formatText(text) {
+    if (!text) return '';
+    return applyGlossary(text.trim().split(/\n{2,}/).map(p => {
+      let h = escapeHtml(p)
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(?!\*)([^*\n]+)\*/g, '<em>$1</em>')
+        .replace(/\n/g, '<br/>');
+      return `<p>${h}</p>`;
+    }).join(''));
+  }
+
+  /* ═══════════════════════════════════════════════════
+     GEOMETRY
+     ═══════════════════════════════════════════════════ */
+
+  const CX = 240, CY = 205, RAD = 160;
+  const nodePos = {};
+  const RING = NODE_DEFS.filter(d => !d.center);
+  NODE_DEFS.filter(d => d.center).forEach(def => { nodePos[def.id] = { x: CX, y: CY, ...def }; });
+  RING.forEach((def, i) => {
+    const angle = (Math.PI / 2) + (2 * Math.PI * i) / RING.length;
+    nodePos[def.id] = { x: CX + RAD * Math.cos(angle), y: CY - RAD * Math.sin(angle), ...def };
+  });
+
+  // Where a tie's label sits. Spokes from the center are labeled toward the
+  // outer node, and long diagonals away from the crowded middle.
+  function labelT(tie) {
+    const a = nodePos[tie.nodeA], b = nodePos[tie.nodeB];
+    if (a.center || b.center) return a.center ? 0.62 : 0.38;
+    const len = Math.hypot(a.x - b.x, a.y - b.y);
+    return len > RAD * 1.5 ? 0.74 : 0.5;
+  }
+  function tieMidpoint(tieId) {
+    const tie = TIE_DEFS.find(t => t.id === tieId);
+    if (!tie) return { x: CX, y: CY };
+    const a = nodePos[tie.nodeA], b = nodePos[tie.nodeB], t = labelT(tie);
+    return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t };
+  }
+
+  /* ═══════════════════════════════════════════════════
+     GAME CONSTANTS
+     ═══════════════════════════════════════════════════ */
+
+  const RULES = window.GAME_RULES || { frontThreshold: 65, driftMin: 1, driftMax: 2 };
+  const TOTAL_EVENTS = EVENTS.length;
+  const tieDef = id => TIE_DEFS.find(t => t.id === id);
+  // A change is "bad" for the player if it strengthens the opposition or weakens loyalty.
+  const isBad = (tieId, amt) => { const d = tieDef(tieId); return d && ((d.kind === 'opposition' && amt > 0) || (d.kind === 'loyalty' && amt < 0)); };
+  const signed = n => (n > 0 ? '+' : '\u2212') + Math.abs(n);
+  function nationalFront() {
+    const ft = TIE_DEFS.filter(t => t.front);
+    return Math.round(ft.reduce((a, t) => a + state.ties[t.id], 0) / ft.length);
+  }
+
+  let state = null;
+  let vigIdx = 0;
+  let gameActive = false;
+  let currentEventRef = null;
+
+  function newState() {
+    const ties = {};
+    TIE_DEFS.forEach(t => { ties[t.id] = t.initial; });
+    return { ties, eventIndex: 0, gameOver: false, outcome: null };
+  }
+
+  /* ═══════════════════════════════════════════════════
+     DOM REFS
+     ═══════════════════════════════════════════════════ */
+
+  const $ = id => document.getElementById(id);
+  const vigPanel = $('vignettePanel'), vigTitle = $('vignetteTitle');
+  const vigText = $('vignetteText'), vigNext = $('vignetteNext');
+  const gameCont = $('gameContainer'), gameDateEl = $('gameDate');
+  const evTitle = $('eventTitle'), evNarr = $('eventNarration');
+  const learnMoreToggle = $('learnMoreToggle'), learnMoreContent = $('learnMoreContent');
+  const actionCards = $('actionCards'), actionArea = $('actionArea');
+  const telegraphOverlay = $('telegraphOverlay'), telegraphText = $('telegraphText');
+  const tutorialHint = $('tutorialHint');
+  const statusMsg = $('statusMessage'), scorePanel = $('scorePanel');
+  const scoreTotal = $('scoreTotal'), scoreRank = $('scoreRank');
+  const reflBox = $('reflectionBox'), restartBtn = $('restartBtn');
+  const svgTies = $('svgTies'), svgNodes = $('svgNodes'), svgInd = $('svgIndicators');
+  const actionOverlay = $('actionOverlay');
+  const networkSvg = $('networkSvg');
+
+  /* ═══════════════════════════════════════════════════
+     VIGNETTE
+     ═══════════════════════════════════════════════════ */
+
+  function showVig(idx) {
+    if (!VIGNETTE || !VIGNETTE.pages) return;
+    vigIdx = Math.min(Math.max(idx, 0), VIGNETTE.pages.length - 1);
+    const p = VIGNETTE.pages[vigIdx];
+    vigTitle.textContent = p.title || '';
+    vigText.innerHTML = formatText(p.text || '');
+    vigNext.textContent = p.button || 'Continue';
+  }
+
+  vigNext.addEventListener('click', () => {
+    if (VIGNETTE && vigIdx < VIGNETTE.pages.length - 1) {
+      showVig(vigIdx + 1);
+    } else {
+      startGame();
     }
-    stopDispatchCycle();
-    if (!gameOver || message) {
-      statusEl.textContent = message;
+  });
+
+  function startGame() {
+    vigPanel.classList.add('hidden');
+    gameCont.classList.remove('hidden');
+    state = newState();
+    buildSvg();
+    buildProgressDots();
+    gameActive = true;
+    showEvent();
+  }
+
+  function showHint(text) {
+    tutorialHint.textContent = text;
+    tutorialHint.classList.remove('hidden');
+  }
+
+  function hideHint() {
+    tutorialHint.classList.add('hidden');
+  }
+
+  /* ═══════════════════════════════════════════════════
+     SVG — BUILD & UPDATE
+     ═══════════════════════════════════════════════════ */
+
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+    return el;
+  }
+
+  function buildSvg() {
+    svgTies.innerHTML = '';
+    svgNodes.innerHTML = '';
+    svgInd.innerHTML = '';
+
+    // Draw ties
+    TIE_DEFS.forEach(tie => {
+      const a = nodePos[tie.nodeA], b = nodePos[tie.nodeB];
+      const mid = tieMidpoint(tie.id);
+
+      // Visible line
+      const line = svgEl('line', {
+        x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+        class: `tie-line kind-${tie.kind || 'opposition'}${tie.front ? ' front-tie' : ''}`, 'data-tie': tie.id
+      });
+      svgTies.appendChild(line);
+
+      // Value label at midpoint
+      const valLabel = svgEl('text', {
+        x: mid.x, y: mid.y + 4,
+        class: `tie-value-label${tie.kind === 'opposition' && !tie.front ? ' minor' : ''}`, 'data-tie': tie.id
+      });
+      valLabel.textContent = '';
+      svgTies.appendChild(valLabel);
+
+      // Hover label (tie name)
+      const hoverLabel = svgEl('text', {
+        x: mid.x, y: mid.y - 8,
+        class: 'tie-hover-label', 'data-tie': tie.id
+      });
+      hoverLabel.textContent = tie.label;
+      svgTies.appendChild(hoverLabel);
+    });
+
+    // Draw nodes
+    NODE_DEFS.forEach(def => {
+      const pos = nodePos[def.id];
+
+      // Ambient glow
+      const glow = svgEl('circle', {
+        cx: pos.x, cy: pos.y, r: 28,
+        fill: def.color, 'fill-opacity': '0.08',
+        class: 'node-glow', 'data-node': def.id
+      });
+      svgNodes.appendChild(glow);
+
+      const circle = svgEl('circle', {
+        cx: pos.x, cy: pos.y, r: 18,
+        fill: def.color, 'fill-opacity': '0.9',
+        stroke: def.color, 'stroke-width': '1.5',
+        class: 'network-node-circle', 'data-node': def.id
+      });
+      svgNodes.appendChild(circle);
+
+      const label = svgEl('text', {
+        x: pos.x, y: pos.y + 3,
+        class: 'network-node-label'
+      });
+      label.textContent = def.shortLabel;
+      svgNodes.appendChild(label);
+    });
+
+    updateSvg();
+  }
+
+  function updateSvg() {
+    if (!state) return;
+
+    TIE_DEFS.forEach(tie => {
+      const val = state.ties[tie.id];
+      const lines = svgTies.querySelectorAll(`.tie-line[data-tie="${tie.id}"]`);
+      const valLabels = svgTies.querySelectorAll(`.tie-value-label[data-tie="${tie.id}"]`);
+
+      // Three visual weights: National Front ties heaviest, loyalty spokes
+      // strong, the other movement ties thin background lines.
+      const f = val / 100;
+      let width, opacity;
+      if (tie.kind === 'loyalty') { width = 2 + f * 5; opacity = 0.45 + f * 0.5; }
+      else if (tie.front) { width = 2.5 + f * 6.5; opacity = 0.55 + f * 0.45; }
+      else { width = 0.8 + f * 1.4; opacity = 0.15 + f * 0.25; }
+
+      lines.forEach(line => {
+        line.setAttribute('stroke-width', width);
+        line.setAttribute('stroke-opacity', opacity);
+
+        // Remove all state classes first
+        line.classList.remove('critical', 'healthy');
+        const danger = tie.kind === 'loyalty' ? val < 20 : (tie.front && val >= 70);
+        if (val <= 0 && tie.kind === 'loyalty') {
+          line.setAttribute('stroke-opacity', '0');
+        } else if (danger) {
+          line.classList.add('critical');
+        }
+      });
+
+      valLabels.forEach(el => {
+        el.textContent = val;
+        el.classList.toggle('critical-text', tie.kind === 'loyalty' ? val < 20 : (tie.front && val >= 70));
+      });
+    });
+
+    const nf = nationalFront();
+    const g = $('frontGauge');
+    g.textContent = `National Front ${nf} / ${RULES.frontThreshold}`;
+    g.classList.toggle('danger', nf >= RULES.frontThreshold - 8);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ANIMATIONS
+     ═══════════════════════════════════════════════════ */
+
+  function showIndicator(tieId, text, cls) {
+    const mid = tieMidpoint(tieId);
+    const xOff = (Math.random() * 14 - 7);
+    const yOff = cls === 'tend-ind' ? -16 : cls === 'decay-ind' ? 14 : cls === 'side-cost-ind' ? -20 : 0;
+    const el = svgEl('text', {
+      x: mid.x + xOff,
+      y: mid.y + yOff,
+      class: `svg-indicator ${cls} show`
+    });
+    el.textContent = text;
+    svgInd.appendChild(el);
+  }
+
+  function animateStrain(tieId, amount) {
+    // Flash the line red, then transition to persistent strained glow
+    const line = svgTies.querySelector(`.tie-line[data-tie="${tieId}"]`);
+    if (line) {
+      line.classList.add('strain-flash');
+      setTimeout(() => {
+        line.classList.remove('strain-flash');
+        line.classList.add('strained');
+      }, 500);
     }
-    if (!gameOver) {
-      statusEl.classList.remove('status-victory', 'status-defeat');
-      optionButtons.forEach(btn => {
-        btn.disabled = false;
+
+    // Show floating indicator
+    showIndicator(tieId, signed(amount), 'strain-ind');
+
+    // Show hover label briefly
+    const hoverLabel = svgTies.querySelector(`.tie-hover-label[data-tie="${tieId}"]`);
+    if (hoverLabel) {
+      hoverLabel.classList.add('visible');
+      setTimeout(() => hoverLabel.classList.remove('visible'), 1500);
+    }
+  }
+
+  function animateTend(tieId, amount) {
+    const line = svgTies.querySelector(`.tie-line[data-tie="${tieId}"]`);
+    if (line) {
+      line.classList.add('tie-tended');
+      setTimeout(() => line.classList.remove('tie-tended'), 900);
+    }
+
+    // Node bounce
+    const tie = TIE_DEFS.find(t => t.id === tieId);
+    if (tie) {
+      [tie.nodeA, tie.nodeB].forEach(nodeId => {
+        const circle = svgNodes.querySelector(`.network-node-circle[data-node="${nodeId}"]`);
+        if (circle) {
+          circle.classList.add('node-react');
+          setTimeout(() => circle.classList.remove('node-react'), 400);
+        }
       });
     }
-  }
-}
 
-async function sendTurn(choiceId, options = {}) {
-  if (!gameReady || gameOver) {
-    return false;
-  }
-  const { showWaiting = false } = options;
-  if (showWaiting) {
-    setWaiting(true);
-  }
-  let success = false;
-  let followupMessage = '';
-  try {
-    const data = advanceTurn(choiceId);
-    renderTurn(data);
-    handleGameConclusion(data.game_status);
-    success = true;
-  } catch (err) {
-    alert('Error: ' + err.message);
-    followupMessage = 'The telegraph line falters; no reply was secured: ' + err.message;
-  }
-  if (showWaiting) {
-    setWaiting(false, followupMessage);
-  } else if (followupMessage) {
-    setWaiting(false, followupMessage);
-  }
-  return success;
-}
+    showIndicator(tieId, signed(amount), 'tend-ind');
 
-function handleGameConclusion(gameStatus) {
-  if (!gameStatus || gameStatus.status === 'ongoing') {
-    return;
+    // Show hover label
+    const hoverLabel = svgTies.querySelector(`.tie-hover-label[data-tie="${tieId}"]`);
+    if (hoverLabel) {
+      hoverLabel.classList.add('visible');
+      setTimeout(() => hoverLabel.classList.remove('visible'), 1200);
+    }
   }
-  gameOver = true;
-  const statusEl = document.getElementById('statusMessage');
-  statusEl.classList.remove('status-victory', 'status-defeat');
-  const prefix = gameStatus.status === 'victory' ? 'Victory — ' : 'Defeat — ';
-  statusEl.textContent = prefix + (gameStatus.message || '');
-  statusEl.classList.add(gameStatus.status === 'victory' ? 'status-victory' : 'status-defeat');
 
-  document.querySelectorAll('#options button.option').forEach(btn => {
-    btn.disabled = true;
+  function animateSideCost(tieId, amount) {
+    if (isBad(tieId, amount)) {
+      animateStrain(tieId, amount);
+    } else {
+      animateTend(tieId, amount);
+    }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     TELEGRAPH
+     ═══════════════════════════════════════════════════ */
+
+  function showTelegraph(text, callback) {
+    if (!text) { callback(); return; }
+    telegraphText.textContent = text;
+    telegraphOverlay.classList.remove('hidden', 'fading');
+
+    setTimeout(() => {
+      telegraphOverlay.classList.add('fading');
+      setTimeout(() => {
+        telegraphOverlay.classList.add('hidden');
+        telegraphOverlay.classList.remove('fading');
+        callback();
+      }, 400);
+    }, 1400);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PROGRESS DOTS
+     ═══════════════════════════════════════════════════ */
+
+  function buildProgressDots() {
+    const container = $('progressDots');
+    container.innerHTML = '';
+    for (let i = 0; i < TOTAL_EVENTS; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'progress-dot';
+      container.appendChild(dot);
+    }
+  }
+
+  function updateProgressDots(currentIndex) {
+    const dots = document.querySelectorAll('.progress-dot');
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('completed', i < currentIndex);
+      dot.classList.toggle('current', i === currentIndex);
+    });
+  }
+
+  /* ═══════════════════════════════════════════════════
+     LEARN MORE
+     ═══════════════════════════════════════════════════ */
+
+  learnMoreToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = learnMoreContent.classList.toggle('expanded');
+    learnMoreToggle.innerHTML = isOpen ? 'Less &#9662;' : 'Learn more &#9656;';
   });
-  document.getElementById('restartBtn').classList.remove('hidden');
-}
 
-function advanceVignette() {
-  if (currentVignetteIndex < vignettePages.length - 1) {
-    showVignettePage(currentVignetteIndex + 1);
-  } else {
-    beginGameFlow();
+  /* Click text box while showing strain → return to event narration */
+  $('eventCompact').addEventListener('click', () => {
+    if ($('eventCompact').classList.contains('showing-strain') && currentEventRef) {
+      showEventNarration();
+    }
+  });
+
+  function collapseLearnMore() {
+    learnMoreContent.classList.remove('expanded');
+    learnMoreToggle.innerHTML = 'Learn more &#9656;';
   }
-}
 
-function restartGame() {
-  resetInteractiveState();
-  gameState = null;
-  gameReady = false;
-  document.getElementById('gamePanel').classList.add('hidden');
-  document.getElementById('statsPanel').classList.add('hidden');
-  document.getElementById('vignettePanel').classList.remove('hidden');
-  currentVignetteIndex = 0;
-  showVignettePage(0);
-}
+  /* ═══════════════════════════════════════════════════
+     HIGHLIGHT SYSTEM
+     ═══════════════════════════════════════════════════ */
 
-document.getElementById('vignetteNext').addEventListener('click', advanceVignette);
-
-document.getElementById('restartBtn').addEventListener('click', restartGame);
-
-(function init() {
-  updateVersionBadge(GAME_VERSION);
-  loadVignette();
-  if (!vignettePages.length) {
-    vignettePages = getFallbackVignette();
+  function highlightTies(action) {
+    action.effects.forEach((e, i) => {
+      const line = svgTies.querySelector(`.tie-line[data-tie="${e.tie}"]`);
+      if (line) line.classList.add(i === 0 ? 'tie-highlight-primary' : (isBad(e.tie, e.amount) ? 'tie-highlight-cost' : 'tie-highlight-bonus'));
+      const label = svgTies.querySelector(`.tie-hover-label[data-tie="${e.tie}"]`);
+      if (label) label.classList.add('visible');
+      const val = svgTies.querySelector(`.tie-value-label[data-tie="${e.tie}"]`);
+      if (val) val.classList.add('show');
+    });
   }
-  showVignettePage(0);
+
+  function clearHighlights() {
+    svgTies.querySelectorAll('.tie-line').forEach(el => {
+      el.classList.remove('tie-highlight-primary', 'tie-highlight-cost', 'tie-highlight-bonus');
+    });
+    svgTies.querySelectorAll('.tie-hover-label').forEach(el => {
+      el.classList.remove('visible');
+    });
+    svgTies.querySelectorAll('.tie-value-label.show').forEach(el => el.classList.remove('show'));
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ACTION MARKERS (on network)
+     ═══════════════════════════════════════════════════ */
+
+  function svgToOverlayPercent(svgX, svgY) {
+    // Convert SVG viewBox coords (0-480, 0-420) to percentage of the SVG element
+    return { left: (svgX / 480) * 100, top: (svgY / 420) * 100 };
+  }
+
+  function clearActionMarkers() {
+    actionOverlay.innerHTML = '';
+    svgInd.querySelectorAll('.marker-connector').forEach(el => el.remove());
+    svgTies.classList.remove('choosing');
+    svgTies.querySelectorAll('.in-play').forEach(el => el.classList.remove('in-play'));
+  }
+
+  // While a decision is open, emphasize every tie any option would change.
+  function markInPlay(actions) {
+    const ids = new Set();
+    actions.forEach(a => a.effects.forEach(e => ids.add(e.tie)));
+    ids.forEach(id => {
+      svgTies.querySelectorAll(`[data-tie="${id}"]`).forEach(el => el.classList.add('in-play'));
+    });
+    svgTies.classList.add('choosing');
+  }
+
+  /* Fixed anchor points in SVG coords for connector lines */
+  const MARKER_ANCHORS = [
+    { x: 70, y: 50 },   /* slot-0: near top-left marker */
+    { x: 410, y: 50 },  /* slot-1: near top-right marker */
+    { x: 240, y: 380 }  /* slot-2: near bottom-center marker */
+  ];
+
+  function renderActionMarkers(actions) {
+    clearActionMarkers();
+    markInPlay(actions);
+    let expandedMarker = null;
+
+    actions.forEach((action, idx) => {
+      const mid = tieMidpoint(action.effects[0].tie);
+      const anchor = MARKER_ANCHORS[idx];
+
+      /* Draw connector line from slot anchor to tie midpoint */
+      const connLine = svgEl('line', {
+        x1: anchor.x, y1: anchor.y,
+        x2: mid.x, y2: mid.y,
+        class: 'marker-connector'
+      });
+      svgInd.appendChild(connLine);
+
+      const effectsHtml = action.effects.map(e => {
+        const d = tieDef(e.tie);
+        const color = isBad(e.tie, e.amount) ? 'var(--ruby)' : 'var(--emerald)';
+        return `<span style="color:${color}">${escapeHtml(d ? d.label : e.tie)} ${signed(e.amount)}</span>`;
+      }).join(' &middot; ');
+
+      const marker = document.createElement('div');
+      marker.className = 'tie-action-marker slot-' + idx;
+      marker.style.animationDelay = (idx * 100) + 'ms';
+      marker.innerHTML = `
+        <span class="marker-label">${escapeHtml(action.label)}</span>
+        <span class="marker-desc">${escapeHtml(action.description)}</span>
+        <span class="marker-effects">${effectsHtml}</span>
+        <span class="marker-confirm">&#9654; Confirm</span>
+      `;
+
+      const line = svgTies.querySelector(`.tie-line[data-tie="${action.effects[0].tie}"]`);
+
+      marker.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (marker.classList.contains('expanded')) {
+          clearActionMarkers();
+          clearHighlights();
+          executeAction(action);
+        } else {
+          if (expandedMarker && expandedMarker !== marker) {
+            expandedMarker.classList.remove('expanded');
+            clearHighlights();
+          }
+          marker.classList.add('expanded');
+          expandedMarker = marker;
+          highlightTies(action);
+        }
+      });
+
+      marker.addEventListener('mouseenter', () => {
+        if (!marker.classList.contains('expanded')) {
+          if (line) line.classList.add('tie-highlight-primary');
+          const hoverLabel = svgTies.querySelector(`.tie-hover-label[data-tie="${action.effects[0].tie}"]`);
+          if (hoverLabel) hoverLabel.classList.add('visible');
+        }
+      });
+
+      marker.addEventListener('mouseleave', () => {
+        if (!marker.classList.contains('expanded')) {
+          if (line) line.classList.remove('tie-highlight-primary');
+          const hoverLabel = svgTies.querySelector(`.tie-hover-label[data-tie="${action.effects[0].tie}"]`);
+          if (hoverLabel) hoverLabel.classList.remove('visible');
+        }
+      });
+
+      actionOverlay.appendChild(marker);
+    });
+
+    actionOverlay.addEventListener('click', () => {
+      if (expandedMarker) {
+        expandedMarker.classList.remove('expanded');
+        expandedMarker = null;
+        clearHighlights();
+      }
+    }, { once: true });
+  }
+
+  /* ═══════════════════════════════════════════════════
+     GAME LOOP
+     ═══════════════════════════════════════════════════ */
+
+  /* ─── Text box helpers ─── */
+
+  function showEventNarration() {
+    if (!currentEventRef) return;
+    const ev = currentEventRef;
+    evTitle.textContent = ev.title;
+    evNarr.innerHTML = formatText(ev.narration);
+    if (ev.learnMore) {
+      learnMoreContent.innerHTML = formatText(ev.learnMore);
+      learnMoreToggle.classList.remove('hidden');
+      collapseLearnMore();
+    } else {
+      learnMoreToggle.classList.add('hidden');
+    }
+    $('eventCompact').classList.remove('showing-strain');
+  }
+
+  function showStrainReason(tieDef, strain) {
+    evTitle.textContent = tieDef.label;
+    evNarr.innerHTML = `<p class="strain-back">&larr; tap to return</p><p>${escapeHtml(strain.reason)}</p><p class="strain-amount">${signed(strain.amount)}</p>`;
+    learnMoreToggle.classList.add('hidden');
+    learnMoreContent.classList.remove('expanded');
+    $('eventCompact').classList.add('showing-strain');
+  }
+
+  /* ─── Strained line interactivity ─── */
+
+  function makeStrainedLinesClickable(ev) {
+    ev.shifts.forEach(strain => {
+      const tieDef = TIE_DEFS.find(t => t.id === strain.tie);
+      if (!tieDef) return;
+      const a = nodePos[tieDef.nodeA], b = nodePos[tieDef.nodeB];
+
+      // Wide invisible hit area on top of the strained line
+      const hitArea = svgEl('line', {
+        x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+        class: 'tie-hit-area', 'data-tie': strain.tie
+      });
+      hitArea.addEventListener('click', () => showStrainReason(tieDef, strain));
+      svgInd.appendChild(hitArea);
+    });
+  }
+
+  function clearStrainedState() {
+    svgTies.querySelectorAll('.tie-line.strained').forEach(el => el.classList.remove('strained'));
+    svgInd.querySelectorAll('.tie-hit-area').forEach(el => el.remove());
+    $('eventCompact').classList.remove('showing-strain');
+  }
+
+  /* ─── Main game loop ─── */
+
+  function showEvent() {
+    if (!state || state.eventIndex >= TOTAL_EVENTS) return;
+    const ev = EVENTS[state.eventIndex];
+    currentEventRef = ev;
+
+    updateProgressDots(state.eventIndex);
+    gameDateEl.textContent = ev.date;
+
+    // Clear stale content
+    actionCards.innerHTML = '';
+    actionArea.classList.add('hidden');
+    clearActionMarkers();
+    clearStrainedState();
+    evTitle.textContent = '';
+    evNarr.innerHTML = '';
+    learnMoreToggle.classList.add('hidden');
+    collapseLearnMore();
+
+    // Telegraph first
+    showTelegraph(ev.telegraph, () => {
+      // Apply strains — lines glow persistently
+      svgInd.innerHTML = '';
+      applyStrains(ev.shifts, () => {
+        // Check defeat after strain
+        const broken = checkDefeat();
+        if (broken) { endGame('defeat', broken); return; }
+
+        // Show event narration in text box
+        showEventNarration();
+
+        // Make strained lines clickable
+        makeStrainedLinesClickable(ev);
+
+        // Show action markers on network
+        actionArea.classList.add('hidden');
+        renderActionMarkers(ev.actions);
+        gameActive = true;
+      });
+    });
+  }
+
+  function applyStrains(strains, callback) {
+    strains.forEach((s, i) => {
+      setTimeout(() => {
+        state.ties[s.tie] = Math.max(0, Math.min(100, state.ties[s.tie] + s.amount));
+        animateSideCost(s.tie, s.amount);
+        updateSvg();
+      }, i * 450);
+    });
+    setTimeout(callback, strains.length * 450 + 350);
+  }
+
+  /* (Action cards removed — actions now live on the network as markers) */
+
+  function executeAction(action) {
+    if (!gameActive || state.gameOver) return;
+    gameActive = false;
+
+    // Clear markers, highlights, and strained state
+    clearActionMarkers();
+    clearHighlights();
+    clearStrainedState();
+
+    svgInd.innerHTML = '';
+
+    // Apply every effect
+    action.effects.forEach((e, i) => {
+      state.ties[e.tie] = Math.max(0, Math.min(100, state.ties[e.tie] + e.amount));
+      setTimeout(() => { animateSideCost(e.tie, e.amount); updateSvg(); }, i * 300);
+    });
+
+    // Drift: untouched opposition ties strengthen; untouched loyalty ties erode
+    const touched = new Set(action.effects.map(e => e.tie));
+    const currentEv = EVENTS[state.eventIndex];
+    if (currentEv) currentEv.shifts.forEach(s => touched.add(s.tie));
+    TIE_DEFS.forEach(tie => {
+      if (touched.has(tie.id)) return;
+      if (tie.kind === 'opposition') {
+        const drift = RULES.driftMin + Math.floor(Math.random() * (RULES.driftMax - RULES.driftMin + 1));
+        state.ties[tie.id] = Math.min(100, state.ties[tie.id] + drift);
+      } else {
+        state.ties[tie.id] = Math.max(0, state.ties[tie.id] - (RULES.loyaltyErosion || 0));
+      }
+    });
+
+    updateSvg();
+
+    // Check defeat
+    const broken = checkDefeat();
+    if (broken) {
+      setTimeout(() => endGame('defeat', broken), 600);
+      return;
+    }
+
+    // Advance
+    state.eventIndex++;
+    if (state.eventIndex >= TOTAL_EVENTS) {
+      setTimeout(() => endGame('victory', null), 600);
+      return;
+    }
+
+    setTimeout(() => {
+      gameActive = true;
+      showEvent();
+    }, 1100);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     WIN / LOSS
+     ═══════════════════════════════════════════════════ */
+
+  function checkDefeat() {
+    for (const tie of TIE_DEFS) {
+      if (tie.kind === 'loyalty' && state.ties[tie.id] <= 0) return tie.id;
+    }
+    if (nationalFront() >= RULES.frontThreshold) return 'national_front';
+    return null;
+  }
+
+  function endGame(outcome, brokenTie) {
+    state.gameOver = true;
+    state.outcome = outcome;
+    gameActive = false;
+
+    actionArea.classList.add('hidden');
+    gameCont.classList.add('game-over');
+
+    const total = nationalFront();
+
+    if (outcome === 'victory') {
+      statusMsg.textContent = 'Victory \u2014 The partition holds.';
+      statusMsg.className = 'status-message status-victory';
+      evTitle.textContent = VICTORY.title || 'Victory';
+      evNarr.innerHTML = formatText(VICTORY.narration || '');
+      learnMoreToggle.classList.add('hidden');
+      gameDateEl.textContent = 'December 1908';
+
+      scorePanel.classList.remove('hidden');
+      animateScore(total, scoreTotal);
+      setTimeout(() => { scoreRank.textContent = getRank(total); }, 1200);
+
+      if (VICTORY.reflection) {
+        const items = VICTORY.reflection.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        reflBox.innerHTML = `<div class="reflection-label">Reflection</div><p>Consider these questions:</p><ul>${items}</ul>`;
+        reflBox.classList.remove('hidden');
+      }
+    } else {
+      const defeat = DEFEATS[brokenTie] || {};
+      const tieDef = TIE_DEFS.find(t => t.id === brokenTie);
+      statusMsg.textContent = `Defeat \u2014 ${defeat.title || (tieDef ? tieDef.label + ' broke' : 'You lost control.')}`;
+      statusMsg.className = 'status-message status-defeat';
+      evTitle.textContent = defeat.title || 'You Lose Control';
+      evNarr.innerHTML = formatText(defeat.narration || '');
+      learnMoreToggle.classList.add('hidden');
+
+      scorePanel.classList.remove('hidden');
+      animateScore(total, scoreTotal);
+      setTimeout(() => { scoreRank.textContent = 'Control Lost'; }, 1200);
+
+      if (defeat.reflection) {
+        const items = defeat.reflection.map(p => `<li>${escapeHtml(p)}</li>`).join('');
+        reflBox.innerHTML = `<div class="reflection-label">Reflection: ${escapeHtml(defeat.title || 'What Broke')}</div><p>Consider these questions:</p><ul>${items}</ul>`;
+        reflBox.classList.remove('hidden');
+      }
+    }
+
+    restartBtn.classList.remove('hidden');
+  }
+
+  function animateScore(total, el) {
+    let current = 0;
+    const step = Math.max(1, Math.ceil(total / 40));
+    const interval = setInterval(() => {
+      current = Math.min(current + step, total);
+      el.textContent = current;
+      if (current >= total) clearInterval(interval);
+    }, 30);
+  }
+
+  function getRank(front) {
+    if (front < 35) return 'Master of Divide and Rule';
+    if (front < 45) return 'Effective Administrator';
+    if (front < 55) return 'Holding the Line';
+    return 'Barely in Control';
+  }
+
+  /* ═══════════════════════════════════════════════════
+     RESTART
+     ═══════════════════════════════════════════════════ */
+
+  restartBtn.addEventListener('click', () => {
+    gameCont.classList.add('hidden');
+    gameCont.classList.remove('game-over');
+    vigPanel.classList.remove('hidden');
+    vigIdx = 0;
+    showVig(0);
+    statusMsg.textContent = '';
+    statusMsg.className = 'status-message';
+    scorePanel.classList.add('hidden');
+    reflBox.innerHTML = '';
+    reflBox.classList.add('hidden');
+    restartBtn.classList.add('hidden');
+    actionArea.classList.remove('hidden');
+    actionArea.classList.remove('revealing');
+    learnMoreToggle.classList.remove('hidden');
+    collapseLearnMore();
+    clearStrainedState();
+    clearActionMarkers();
+    currentEventRef = null;
+    state = null;
+    gameActive = false;
+  });
+
+  /* ═══════════════════════════════════════════════════
+     INIT
+     ═══════════════════════════════════════════════════ */
+
+  showVig(0);
+
 })();
 </script>
 </body>
